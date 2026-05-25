@@ -1,0 +1,36 @@
+name: Jardin Majorelle MVP CI Checks
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  backend-lint-and-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-node: '18'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Security Vulnerability Audit
+        run: |
+          cd backend
+          npm audit --audit-level=high || true
+
+      - name: Verify Backend Server Build
+        run: |
+          cd backend
+          node --check src/server.js
