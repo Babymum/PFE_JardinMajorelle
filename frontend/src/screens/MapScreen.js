@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, ActivityIndicator, Dimensions, Linking, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Menu, Plus, Minus, Crosshair, MapPin, Bookmark, Layers, Flower2, Home, ArrowLeft } from 'lucide-react-native';
+import { Menu, Plus, Minus, Crosshair, MapPin, Bookmark, Layers, Flower2, Home, ArrowLeft, Route } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+import MapView, { Marker, Polyline } from 'react-native-maps';
 import { getZones } from '../../api/api';
 import { useTranslation } from 'react-i18next';
 
@@ -11,23 +12,98 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const MAP_AREA_WIDTH = SCREEN_WIDTH; 
 const MAP_AREA_HEIGHT = 450; 
 
+const GARDEN_COORDS = {
+  latitude: 31.641758,
+  longitude: -8.002498,
+};
+
 export default function MapScreen({ navigation }) {
   const { t, i18n } = useTranslation();
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedZone, setSelectedZone] = useState(null);
   const [activeFilter, setActiveFilter] = useState('ALL');
+  
+  const [userLocation, setUserLocation] = useState(null);
+  const [distanceKm, setDistanceKm] = useState(null);
+  const [locationError, setLocationError] = useState(null);
+  const [is3DMode, setIs3DMode] = useState(false);
+  
   const mapRef = useRef(null);
+  const locationSubscription = useRef(null);
   const [region, setRegion] = useState({
-    latitude: 31.6416,
-    longitude: -8.0024,
+    latitude: 31.641758,
+    longitude: -8.002498,
     latitudeDelta: 0.005,
     longitudeDelta: 0.005,
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const normalizeZoneType = (value) =>
+    value
+      ? value
+          .toString()
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[\s-]+/g, '_')
+      : null;
+
+  const calculateDistanceKm = (from, to) => {
+    const toRad = (degrees) => degrees * Math.PI / 180;
+    const dLat = toRad(to.latitude - from.latitude);
+    const dLon = toRad(to.longitude - from.longitude);
+    const lat1 = toRad(from.latitude);
+    const lat2 = toRad(to.latitude);
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Number((6371 * c).toFixed(2));
+  };
+
+  const formatDistance = (distance) => {
+    if (distance === null || distance === undefined) return '';
+    if (distance < 1) return `${Math.round(distance * 1000)} m`;
+    return `${distance} km`;
+  };
+
+  const requestLocationPermissionAndWatch = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setLocationError(t('map_location_error_permission'));
+        return;
+      }
+
+      const currentPosition = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Highest });
+      const currentCoords = {
+        latitude: currentPosition.coords.latitude,
+        longitude: currentPosition.coords.longitude,
+      };
+      setUserLocation(currentCoords);
+      setDistanceKm(calculateDistanceKm(currentCoords, GARDEN_COORDS));
+
+      const subscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.Highest,
+          timeInterval: 5000,
+          distanceInterval: 5,
+        },
+        (locationUpdate) => {
+          const updatedCoords = {
+            latitude: locationUpdate.coords.latitude,
+            longitude: locationUpdate.coords.longitude,
+          };
+          setUserLocation(updatedCoords);
+          setDistanceKm(calculateDistanceKm(updatedCoords, GARDEN_COORDS));
+        }
+      );
+
+      locationSubscription.current = subscription;
+    } catch (error) {
+      console.log('Location error:', error);
+      setLocationError(t('map_location_error_fetch'));
+    }
+  };
 
   const fetchData = async () => {
     setLoading(true);
@@ -44,7 +120,28 @@ export default function MapScreen({ navigation }) {
     }
   };
 
+  useEffect(() => {
+    fetchData();
+    requestLocationPermissionAndWatch();
+
+    return () => {
+      if (locationSubscription.current) {
+        locationSubscription.current.remove();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (userLocation && mapRef.current) {
+      mapRef.current.fitToCoordinates([userLocation, GARDEN_COORDS], {
+        edgePadding: { top: 100, right: 100, bottom: 200, left: 100 },
+        animated: true,
+      });
+    }
+  }, [userLocation]);
+
   const getZoneDesignProps = useCallback((typeZone) => {
+    const normalizedType = normalizeZoneType(typeZone);
     const designMap = {
       'bassin': { type: 'BASSIN', typeColor: '#B4EAA5', typeTextColor: '#127A3A', image: require('../../assets/majorelle_lilies.png') },
       'jardin_bambou': { type: 'BAMBOO', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/majorelle_bamboo.png') },
@@ -58,15 +155,15 @@ export default function MapScreen({ navigation }) {
       'librairie': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_library.png') },
     };
     
-    return designMap[typeZone] || { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') };
+    return designMap[normalizedType] || { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') };
   }, []);
 
   const filteredZones = useMemo(() => {
     if (activeFilter === 'HISTORICAL') {
-      return zones.filter(z => ['villa_bleue', 'musee_berbere'].includes(z.typeZone));
+      return zones.filter(z => ['villa_bleue', 'musee_berbere'].includes(normalizeZoneType(z.typeZone)));
     }
     if (activeFilter === 'BOTANICAL') {
-      return zones.filter(z => ['bassin', 'jardin_bambou', 'jardin_cactus'].includes(z.typeZone));
+      return zones.filter(z => ['bassin', 'jardin_bambou', 'jardin_cactus'].includes(normalizeZoneType(z.typeZone)));
     }
     return zones;
   }, [zones, activeFilter]);
@@ -82,13 +179,6 @@ export default function MapScreen({ navigation }) {
       zone: zone
     }));
   }, [filteredZones, i18n.language]);
-
-  const initialRegion = {
-    latitude: 31.6416,
-    longitude: -8.0024,
-    latitudeDelta: 0.005,
-    longitudeDelta: 0.005,
-  };
 
   const handleZoomIn = () => {
     setRegion(prev => {
@@ -115,14 +205,46 @@ export default function MapScreen({ navigation }) {
   };
 
   const handleRecenter = () => {
-    const initialRegion = {
-      latitude: 31.6416,
-      longitude: -8.0024,
+    const targetCoords = userLocation || GARDEN_COORDS;
+    const recenterRegion = {
+      latitude: targetCoords.latitude,
+      longitude: targetCoords.longitude,
       latitudeDelta: 0.005,
       longitudeDelta: 0.005,
     };
-    setRegion(initialRegion);
-    mapRef.current?.animateToRegion(initialRegion, 500);
+    setRegion(recenterRegion);
+    mapRef.current?.animateToRegion(recenterRegion, 500);
+  };
+
+  const handleOpenDirections = async () => {
+    const destination = `${GARDEN_COORDS.latitude},${GARDEN_COORDS.longitude}`;
+    const origin = userLocation ? `${userLocation.latitude},${userLocation.longitude}` : '';
+    const url = Platform.select({
+      ios: `http://maps.apple.com/?daddr=${destination}&dirflg=w`,
+      android: `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=walking${origin ? `&origin=${origin}` : ''}`,
+      default: `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=walking${origin ? `&origin=${origin}` : ''}`,
+    });
+
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      Alert.alert(t('map_navigation_error_title'), t('map_navigation_error_desc'));
+    }
+  };
+
+  const handleToggle3D = () => {
+    const nextMode = !is3DMode;
+    setIs3DMode(nextMode);
+
+    mapRef.current?.animateCamera(
+      {
+        center: GARDEN_COORDS,
+        pitch: nextMode ? 60 : 0,
+        heading: nextMode ? -25 : 0,
+        zoom: nextMode ? 18 : 16,
+      },
+      { duration: 700 }
+    );
   };
 
   return (
@@ -135,6 +257,20 @@ export default function MapScreen({ navigation }) {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{t('guide_title')}</Text>
           <View style={{ width: 44 }} />
+        </View>
+
+        <View style={styles.locationPanel}>
+          <Text style={styles.locationTitle}>{t('map_geolocation')}</Text>
+          <Text style={styles.locationSubtitle}>
+            {locationError
+              ? locationError
+              : userLocation
+                ? t('map_distance_to_garden', { distance: formatDistance(distanceKm) })
+                : t('map_searching_location')}
+          </Text>
+          {userLocation && (
+            <Text style={styles.locationCoords}>Lat: {userLocation.latitude.toFixed(5)} · Lon: {userLocation.longitude.toFixed(5)}</Text>
+          )}
         </View>
 
         {/* Top Tabs */}
@@ -168,13 +304,39 @@ export default function MapScreen({ navigation }) {
             showsUserLocation={false}
             showsMyLocationButton={false}
             showsCompass={false}
+            showsBuildings={is3DMode}
+            pitchEnabled={is3DMode}
+            rotateEnabled={is3DMode}
           >
-            {/* You are here marker */}
+            {userLocation ? (
+              <Marker
+                coordinate={userLocation}
+                title={t('map_you_are_here')}
+                pinColor="#0A3A69"
+              />
+            ) : (
+              <Marker
+                coordinate={{ latitude: 31.6410, longitude: -8.0025 }}
+                title={t('map_location_not_available')}
+                pinColor="#0A3A69"
+              />
+            )}
+
             <Marker
-              coordinate={{ latitude: 31.6410, longitude: -8.0025 }}
-              title={t('map_you_are_here')}
-              pinColor="#0A3A69"
+              coordinate={GARDEN_COORDS}
+              title="Jardin Majorelle"
+              description="Latitude: 31.641758 · Longitude: -8.002498"
+              pinColor="#B4B813"
             />
+
+            {userLocation && (
+              <Polyline
+                coordinates={[userLocation, GARDEN_COORDS]}
+                strokeColor="#0A3A69"
+                strokeWidth={4}
+                lineDashPattern={[10, 6]}
+              />
+            )}
 
             {/* Zone markers - Memoized */}
             {markers.map((marker) => (
@@ -193,10 +355,6 @@ export default function MapScreen({ navigation }) {
               <ActivityIndicator size="large" color="#0A2B5E" />
             </View>
           )}
-
-          <TouchableOpacity style={styles.homePin} onPress={() => navigation.navigate('Home')}>
-            <Home color="#FFF" size={20} />
-          </TouchableOpacity>
         </View>
 
         {/* Right Controls */}
@@ -204,22 +362,32 @@ export default function MapScreen({ navigation }) {
           <TouchableOpacity style={styles.ctrlBtn} onPress={handleZoomIn}><Plus color="#0A2B5E" size={20} /></TouchableOpacity>
           <TouchableOpacity style={styles.ctrlBtn} onPress={handleZoomOut}><Minus color="#0A2B5E" size={20} /></TouchableOpacity>
           <TouchableOpacity style={[styles.ctrlBtn, styles.ctrlBtnDark]} onPress={handleRecenter}><Crosshair color="#FFF" size={20} /></TouchableOpacity>
+          <TouchableOpacity style={[styles.ctrlBtn, styles.routeBtn]} onPress={handleOpenDirections}>
+            <Route color="#FFF" size={20} />
+          </TouchableOpacity>
         </View>
 
         {/* Bottom Elements */}
         <View style={styles.bottomOverlay}>
-          <TouchableOpacity style={styles.layerBtn} onPress={() => Alert.alert(t('map_layers_title'), t('map_layers_desc'))}>
-            <Layers color="#127A3A" size={24} />
+          <TouchableOpacity
+            style={[styles.layerBtn, is3DMode && styles.layerBtnActive]}
+            onPress={handleToggle3D}
+          >
+            <Layers color={is3DMode ? '#FFF' : '#127A3A'} size={24} />
           </TouchableOpacity>
           
           {selectedZone && (
             <View style={styles.bottomCard}>
-              <Image 
-                source={selectedZone.image && (selectedZone.image.startsWith('http://') || selectedZone.image.startsWith('https://')) ? { uri: selectedZone.image } : getZoneDesignProps(selectedZone.typeZone).image} 
-                style={styles.cardCover} 
+              <Image
+                source={selectedZone.image && /^https?:\/\//i.test(selectedZone.image)
+                  ? { uri: selectedZone.image }
+                  : getZoneDesignProps(selectedZone.typeZone).image}
+                style={styles.cardCover}
               />
               <View style={styles.cardContent}>
-                <Text style={styles.cardCategory}>{t(`type_${getZoneDesignProps(selectedZone.typeZone).type.toLowerCase()}`)} {t('map_zone_suffix')}</Text>
+                <Text style={styles.cardCategory}>
+                  {t(`type_${getZoneDesignProps(selectedZone.typeZone).type.toLowerCase()}`)} {t('map_zone_suffix')}
+                </Text>
                 <Text style={styles.cardTitle}>{t('zone_name_' + selectedZone.typeZone, selectedZone.nom)}</Text>
                 <Text style={styles.cardDesc} numberOfLines={2}>{t('zone_desc_' + selectedZone.typeZone, selectedZone.description)}</Text>
                 
@@ -227,7 +395,7 @@ export default function MapScreen({ navigation }) {
                   <TouchableOpacity style={styles.btnPrimary} onPress={() => navigation.navigate('ZoneDetail', { zone: selectedZone })}>
                     <Text style={styles.btnPrimaryText}>{t('map_explore_zone')}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.btnSecondary} onPress={() => Alert.alert(t('map_favorites_title'), t('map_favorites_desc'))}>
+                  <TouchableOpacity style={styles.btnSecondary} onPress={() => Alert.alert(t('map_saved_title'), t('map_saved_bookmark'))}>
                     <Bookmark color="#0A2B5E" size={18} />
                   </TouchableOpacity>
                 </View>
@@ -261,6 +429,34 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#0A2B5E',
     letterSpacing: 2,
+  },
+  locationPanel: {
+    marginHorizontal: 20,
+    marginBottom: 15,
+    padding: 15,
+    borderRadius: 20,
+    backgroundColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  locationTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    color: '#127A3A',
+    marginBottom: 6,
+  },
+  locationSubtitle: {
+    fontSize: 14,
+    color: '#0A2B5E',
+    marginBottom: 6,
+  },
+  locationCoords: {
+    fontSize: 12,
+    color: '#68778D',
   },
   backBtn: {
     backgroundColor: 'rgba(10, 43, 94, 0.1)',
@@ -405,6 +601,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#0A3A69',
     marginTop: 10,
   },
+  routeBtn: {
+    backgroundColor: '#127A3A',
+  },
+  recenterTextBtn: {
+    marginTop: 5,
+    backgroundColor: '#0A3A69',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recenterText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
   bottomOverlay: {
     position: 'absolute',
     bottom: 100,
@@ -426,6 +640,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
+  },
+  layerBtnActive: {
+    backgroundColor: '#0A3A69',
   },
   bottomCard: {
     flex: 1,

@@ -17,6 +17,125 @@ const getZonesCached = async () => {
   return cachedZones;
 };
 
+const normalizeText = (value) =>
+  value
+    ? value
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+    : "";
+
+const getDeterministicGuideReply = (message) => {
+  const normalized = normalizeText(message);
+
+  if (
+    normalized.includes("qui a cree") ||
+    normalized.includes("createur") ||
+    normalized.includes("fondateur") ||
+    normalized.includes("jacques majorelle") ||
+    normalized.includes("created the jardin majorelle") ||
+    normalized.includes("who created") ||
+    normalized.includes("who founded")
+  ) {
+    return "Le Jardin Majorelle a été créé par Jacques Majorelle en 1923. Yves Saint Laurent et Pierre Bergé l’ont ensuite restauré et préservé avec soin.";
+  }
+
+  if (
+    normalized.includes("histoire") ||
+    normalized.includes("restaur") ||
+    normalized.includes("yves saint laurent") ||
+    normalized.includes("pierre berge")
+  ) {
+    return "Le Jardin Majorelle a été créé par Jacques Majorelle en 1923, puis restauré par Yves Saint Laurent et Pierre Bergé.";
+  }
+
+  if (normalized.includes("bassin") || normalized.includes("pond")) {
+    return "Le bassin central est une oasis paisible du jardin. Il accueille des nénuphars, des lotus et des plantes aquatiques qui apportent une atmosphère apaisante.";
+  }
+
+  if (normalized.includes("cactus") || normalized.includes("cacti")) {
+    return "Le jardin de cactus rassemble une collection exceptionnelle de plantes grasses, d’agaves et d’aloès. Il met en avant des espèces issues de climats arides du monde entier.";
+  }
+
+  if (normalized.includes("villa") || normalized.includes("bleu")) {
+    return "La Villa Bleue est l’un des symboles du Jardin Majorelle. Sa façade cobalt, ses balcons et ses jardins luxuriants en font un lieu très reconnaissable.";
+  }
+
+  if (normalized.includes("museum") || normalized.includes("berber")) {
+    return "Le musée berbère expose des bijoux, des costumes et des objets traditionnels marocains. Il est installé dans l’ancienne maison du peintre Jacques Majorelle.";
+  }
+
+  if (normalized.includes("bamboo") || normalized.includes("bambou")) {
+    return "La forêt de bambous forme une ambiance fraîche et ombragée. Ses tiges et ses feuilles créent un parcours très agréable dans le jardin.";
+  }
+
+  return null;
+};
+
+const getOfflineGuideReply = (query) => {
+  const normalized = query.toLowerCase();
+
+  if (normalized.includes("hello") || normalized.includes("hi") || normalized.includes("concierge") || normalized.includes("welcome")) {
+    return "Bienvenue au Jardin Majorelle ! Je suis votre guide virtuel. Je peux vous parler de la Villa Bleue, du jardin de cactus, du musée berbère, du bassin central ou de la forêt de bambous.";
+  }
+
+  if (
+    normalized.includes("history") ||
+    normalized.includes("histoire") ||
+    normalized.includes("yves") ||
+    normalized.includes("saint laurent") ||
+    normalized.includes("restor") ||
+    normalized.includes("creat") ||
+    normalized.includes("jacques")
+  ) {
+    return "Le Jardin Majorelle a été créé par Jacques Majorelle en 1923. Yves Saint Laurent et Pierre Bergé l’ont ensuite restauré et préservé avec soin.";
+  }
+
+  if (normalized.includes("villa") || normalized.includes("bleu") || normalized.includes("oasis")) {
+    return "La Villa Bleue est l’un des symboles du Jardin Majorelle. Sa façade cobalt, ses balcons et ses jardins luxuriants en font un lieu très reconnaissable.";
+  }
+
+  if (normalized.includes("cactus") || normalized.includes("cacti") || normalized.includes("desert")) {
+    return "Le jardin de cactus rassemble une collection exceptionnelle de plantes grasses, d’agaves et d’aloès. Il met en avant des espèces issues de climats arides du monde entier.";
+  }
+
+  if (normalized.includes("lilies") || normalized.includes("lily") || normalized.includes("pond") || normalized.includes("bassin")) {
+    return "Le bassin central est une oasis paisible du jardin. Il accueille des nénuphars, des lotus et des plantes aquatiques qui apportent une atmosphère apaisante.";
+  }
+
+  if (normalized.includes("museum") || normalized.includes("berber") || normalized.includes("studio") || normalized.includes("bijou")) {
+    return "Le musée berbère expose des bijoux, des costumes et des objets traditionnels marocains. Il est installé dans l’ancienne maison du peintre Jacques Majorelle.";
+  }
+
+  if (normalized.includes("bamboo") || normalized.includes("bambou") || normalized.includes("forest") || normalized.includes("canopy")) {
+    return "La forêt de bambous forme une ambiance fraîche et ombragée. Ses tiges et ses feuilles créent un parcours très agréable dans le jardin.";
+  }
+
+  if (normalized.includes("allee") || normalized.includes("allée") || normalized.includes("chemin")) {
+    return "Les allées du jardin relient les points forts du parc. Elles offrent de belles perspectives sur les plantes, les chemins et l’architecture du jardin.";
+  }
+
+  if (normalized.includes("cafe") || normalized.includes("cafes") || normalized.includes("coffee")) {
+    return "Les cafés du Jardin Majorelle sont des lieux de pause agréables. Ils vous permettent de vous reposer au milieu des plantes et de l’architecture du jardin.";
+  }
+
+  if (normalized.includes("boutique") || normalized.includes("shop")) {
+    return "La boutique propose des souvenirs inspirés par le Jardin Majorelle, le design et l’art marocain. C’est un bon endroit pour emporter une pièce du jardin.";
+  }
+
+  if (normalized.includes("librairie") || normalized.includes("book")) {
+    return "La librairie propose une sélection de livres sur l’art, la botanique, la culture marocaine et l’histoire du Jardin Majorelle.";
+  }
+
+  if (normalized.includes("plant") || normalized.includes("plante") || normalized.includes("botan") || normalized.includes("species")) {
+    return "Le Jardin Majorelle abrite une collection très riche de plantes. On y trouve des cactus, des palmiers, des bambous, des nénuphars et des bougainvilliers.";
+  }
+
+  return "Bienvenue au Jardin Majorelle ! Je peux vous renseigner sur la Villa Bleue, le musée berbère, le jardin de cactus, le bassin central, la forêt de bambous, les cafés, la boutique ou la librairie.";
+};
+
 // AI Chatbot Route for Jardin Majorelle
 router.post("/", async (req, res) => {
   const { message } = req.body;
@@ -24,53 +143,14 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "Message is required" });
   }
 
+  // 1. Try deterministic guide replies first (Local fallback for 0ms latency)
+  const directReply = getDeterministicGuideReply(message);
+  if (directReply) {
+    console.log(`[AI Guide] Deterministic reply match triggered for: "${message}"`);
+    return res.json({ reply: directReply });
+  }
+
   const queryLower = message.toLowerCase();
-  let reply = "";
-  let matched = false;
-
-  // 1. Instant Static Keyword Matcher (Local fallback for 0ms latency)
-  const localReplies = {
-    welcome: "Welcome to Jardin Majorelle! I am your digital concierge. How can I help you explore the iconic Blue Villa, Cactus Gardens, or the Berber Museum today?",
-    history: "Jardin Majorelle was created by French painter Jacques Majorelle starting in 1923. In 1980, the fashion designer Yves Saint Laurent and Pierre Bergé purchased the garden to save it from demolition, fully restoring its heritage.",
-    villa: "The famous Villa Oasis (Villa Bleue) is painted in a striking, cobalt-based 'Majorelle Blue', contrasted beautifully with lemon yellow planters. It stands as a vibrant tribute to Art Deco and Moroccan architecture.",
-    cactus: "The Cactus Garden features a world-renowned collection of structural dry-climate plants, including giant cacti, agaves, and aloes compiled from dry-zone deserts globally.",
-    lilies: "The central water lily pond is a peaceful oasis filled with floating water lilies, lotus flowers, and elegant papyrus plants. The ambient trickling water offers refreshing cool air.",
-    museum: "The Berber Museum, located inside the painter's former studio, houses an extraordinary collection of indigenous Moroccan Berber jewelry, armor, costumes, and weaving curated by Pierre Bergé and Yves Saint Laurent.",
-    bamboo: "The Bamboo Forest forms a dense, cooling green canopy over the garden walkways. Its rustling leaves create natural ambient white-noise, keeping the garden refreshing and shaded.",
-    plants: "The garden hosts over 300 plant species from five continents, including a majestic collection of cacti, palms, cooling bamboo, water lilies, and bougainvillea curated over forty years."
-  };
-
-  // Exact or keyword mapping
-  if (queryLower.includes("hello") || queryLower.includes("hi") || queryLower.includes("concierge") || queryLower.includes("welcome")) {
-    reply = localReplies.welcome;
-    matched = true;
-  } else if (queryLower.includes("history") || queryLower.includes("yves") || queryLower.includes("saint laurent") || queryLower.includes("restor")) {
-    reply = localReplies.history;
-    matched = true;
-  } else if (queryLower.includes("villa") || queryLower.includes("bleu") || queryLower.includes("oasis")) {
-    reply = localReplies.villa;
-    matched = true;
-  } else if (queryLower.includes("cactus") || queryLower.includes("cacti") || queryLower.includes("desert")) {
-    reply = localReplies.cactus;
-    matched = true;
-  } else if (queryLower.includes("lilies") || queryLower.includes("lily") || queryLower.includes("pond") || queryLower.includes("bassin")) {
-    reply = localReplies.lilies;
-    matched = true;
-  } else if (queryLower.includes("museum") || queryLower.includes("berber") || queryLower.includes("studio") || queryLower.includes("bijou")) {
-    reply = localReplies.museum;
-    matched = true;
-  } else if (queryLower.includes("bamboo") || queryLower.includes("bambou") || queryLower.includes("forest") || queryLower.includes("canopy")) {
-    reply = localReplies.bamboo;
-    matched = true;
-  } else if (queryLower.includes("plant") || queryLower.includes("botan") || queryLower.includes("species")) {
-    reply = localReplies.plants;
-    matched = true;
-  }
-
-  if (matched) {
-    console.log(`[AI Guide] Instant keyword match triggered for query: "${message}"`);
-    return res.json({ reply });
-  }
 
   try {
     // 2. Dynamic Zone Search in Database (Local MongoDB fallback - fast, offline-capable)
@@ -89,22 +169,23 @@ router.post("/", async (req, res) => {
     if (matchedZone) {
       console.log(`[AI Guide] DB Zone match triggered: ${matchedZone.nom}`);
       return res.json({
-        reply: `The ${matchedZone.nom} is a stunning zone in the garden. ${matchedZone.description ? matchedZone.description : "It represents a core cultural and natural landmark."} It features standard ${matchedZone.typeZone ? matchedZone.typeZone.replace('_', ' ') : 'botanical'} attributes.`
+        reply: `Le/La ${matchedZone.nom} est une magnifique zone du jardin. ${matchedZone.description ? matchedZone.description : "Elle représente un point d'intérêt culturel et naturel."}`
       });
     }
 
     // 3. Fallback: Query Pollinations AI (with AbortController for short 1.8s fast timeout per model)
-    let zoneContext = "Jardin Majorelle: A stunning historical and botanical garden in Marrakech, Morocco, featuring the Blue Villa (Villa Oasis), Berber Museum, Cacti collections, water lilies, and bamboo walkways.";
+    let zoneContext = "Jardin Majorelle : jardin historique et botanique à Marrakech, au Maroc, avec la Villa Bleue, le musée berbère, le jardin de cactus, les nénuphars, la forêt de bambous et les allées du jardin.";
     if (zones && zones.length > 0) {
       zoneContext = zones
         .slice(0, 5) // keep context light
-        .map((z) => `- ${z.nom}: ${z.description ? z.description.substring(0, 100) : "A beautiful part of the garden"}`)
+        .map((z) => `- ${z.nom}: ${z.description ? z.description.substring(0, 120) : "Une zone emblématique du jardin"}`)
         .join("\n");
     }
 
-    const systemPrompt = `You are the digital concierge for Jardin Majorelle. Respond in under 3 sentences. Be polite, extremely concise, and mobile-friendly. Garden Context:\n${zoneContext}`;
+    const systemPrompt = `Tu es le concierge numérique du Jardin Majorelle. Réponds en français, en moins de 3 phrases, avec un ton poli, concis et adapté à mobile. Contexte du jardin :\n${zoneContext}`;
 
     const models = ["openai", "mistral", "llama", "qwen"];
+    let reply = "";
     let success = false;
 
     for (const model of models) {
@@ -146,15 +227,15 @@ router.post("/", async (req, res) => {
     }
 
     if (!success) {
-      console.warn("[AI Guide] All AI models failed or timed out. Returning smart general concierge reply.");
-      reply = "Welcome to Jardin Majorelle! The garden features the famous Blue Villa (Villa Oasis), Berber Museum, Cacti collection, Water Lilies, and Bamboo walks. Let me know if you would like details on any of these beautiful locations!";
+      console.warn("[AI Guide] All AI models failed or timed out. Falling back to offline French guide replies.");
+      reply = getOfflineGuideReply(message);
     }
 
     res.json({ reply: reply.trim() });
   } catch (error) {
     console.error("[AI Guide Error] Chat route failed:", error);
     res.json({
-      reply: "Welcome to Jardin Majorelle! The garden features the famous Blue Villa (Villa Oasis), Berber Museum, Cacti collection, Water Lilies, and Bamboo walks. Let me know if you would like details on any of these beautiful locations!"
+      reply: getOfflineGuideReply(message)
     });
   }
 });

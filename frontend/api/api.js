@@ -10,6 +10,7 @@ const ZONES_CACHE_KEY = 'jardin_majorelle_zones_cache';
 // On crée une instance configurée
 export const apiClient = axios.create({
   baseURL: API_URL,
+  timeout: 8000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -273,6 +274,19 @@ export const uploadZoneImage = async (zoneId, imageUri, token) => {
     return response.data.zone;
   } catch (error) {
     console.error("Erreur lors de l'upload de l'image de zone:", error);
+    throw error;
+  }
+};
+
+export const synthesizeSpeech = async (text) => {
+  try {
+    const response = await apiClient.post('/audio', { text });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Erreur synthèse vocale :",
+      error.message
+    );
     throw error;
   }
 };
