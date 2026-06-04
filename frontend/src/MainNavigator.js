@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet, Text } from 'react-native';
 import { Home, ScanFace, Compass, Box, Bot } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 
 import HomeScreen from './screens/HomeScreen';
 import TourScreen from './screens/TourScreen';
@@ -12,6 +13,8 @@ import MapScreen from './screens/MapScreen';
 const Tab = createBottomTabNavigator();
 
 export default function MainNavigator() {
+  const { t } = useTranslation();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -25,23 +28,23 @@ export default function MainNavigator() {
           switch (route.name) {
             case 'Home':
               IconComp = Home;
-              label = 'HOME';
+              label = t('tab_home');
               break;
             case '3DTour':
               IconComp = Box;
-              label = '3D TOUR';
+              label = t('tab_tour');
               break;
             case 'AR':
               IconComp = ScanFace;
-              label = 'AR';
+              label = t('tab_ar');
               break;
             case 'Guide':
               IconComp = Bot;
-              label = 'GUIDE';
+              label = t('tab_guide');
               break;
             case 'Map':
               IconComp = Compass;
-              label = 'MAP';
+              label = t('tab_map');
               break;
           }
 

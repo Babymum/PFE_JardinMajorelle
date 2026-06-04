@@ -4,8 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shield, User, Lock, Eye, EyeOff, ArrowRight, ArrowLeft } from 'lucide-react-native';
 import { adminLogin } from '../../api/api';
 import { AuthContext } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function AuthScreen({ navigation }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +24,7 @@ export default function AuthScreen({ navigation }) {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
+      Alert.alert(t('auth_error'), t('auth_empty_fields'));
       return;
     }
     
@@ -34,7 +36,7 @@ export default function AuthScreen({ navigation }) {
       // Naviguer vers l'interface d'administration
       navigation.replace('ZoneManagement');
     } catch (error) {
-      Alert.alert('Accès Refusé', 'Identifiants invalides.');
+      Alert.alert(t('auth_denied'), t('auth_invalid_credentials'));
     } finally {
       setIsLoading(false);
     }
@@ -51,17 +53,17 @@ export default function AuthScreen({ navigation }) {
             <Shield color="#FFF" size={32} />
           </View>
           <Text style={styles.appName}>JARDIN MAJORELLE</Text>
-          <Text style={styles.appSub}>A D M I N I S T R A T I V E  P O R T A L</Text>
+          <Text style={styles.appSub}>{t('auth_portal')}</Text>
         </View>
 
         {/* Login Card */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Staff Authentication</Text>
+          <Text style={styles.cardTitle}>{t('auth_staff')}</Text>
           <Text style={styles.cardDesc}>
-            Please enter your credentials to access the secure dashboard.
+            {t('auth_credentials_desc')}
           </Text>
 
-          <Text style={styles.inputLabel}>USERNAME / EMAIL</Text>
+          <Text style={styles.inputLabel}>{t('auth_username_label')}</Text>
           <View style={styles.inputWrapper}>
             <User color="#0A2B5E" size={20} style={styles.inputIcon} />
             <TextInput 
@@ -75,7 +77,7 @@ export default function AuthScreen({ navigation }) {
             />
           </View>
 
-          <Text style={styles.inputLabel}>SECURE PASSWORD</Text>
+          <Text style={styles.inputLabel}>{t('auth_password_label')}</Text>
           <View style={styles.inputWrapper}>
             <Lock color="#0A2B5E" size={20} style={styles.inputIcon} />
             <TextInput 
@@ -96,14 +98,14 @@ export default function AuthScreen({ navigation }) {
               <ActivityIndicator color="#FFF" />
             ) : (
               <>
-                <Text style={styles.authBtnText}>Authenticate</Text>
+                <Text style={styles.authBtnText}>{t('auth_btn')}</Text>
                 <ArrowRight color="#FFF" size={18} />
               </>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.forgotBtn}>
-            <Text style={styles.forgotText}>Forgot Access Credentials?</Text>
+            <Text style={styles.forgotText}>{t('auth_forgot')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -113,12 +115,11 @@ export default function AuthScreen({ navigation }) {
           
           <View style={styles.statusPill}>
             <View style={styles.statusDot} />
-            <Text style={styles.statusText}>SERVER ONLINE   |   V2.4.0-SECURE</Text>
+            <Text style={styles.statusText}>{t('auth_server_online')}   |   V2.4.0-SECURE</Text>
           </View>
 
           <Text style={styles.legalText}>
-            PROPRIETARY SYSTEM — ACCESS RESTRICTED TO{'\n'}
-            AUTHORIZED JARDIN MAJORELLE PERSONNEL ONLY.
+            {t('auth_legal')}
           </Text>
         </View>
       </View>

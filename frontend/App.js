@@ -1,9 +1,14 @@
 import React, { useEffect } from 'react';
+import { I18nManager } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './src/context/AuthContext';
 import AppNavigator from './src/AppNavigator';
 import { getZones } from './api/api';
+
+// Forcer la mise en page en LTR pour éviter le décalage à gauche/droite
+I18nManager.allowRTL(false);
+I18nManager.forceRTL(false);
 
 export default function App() {
   // TEST DE CONNEXION AU DÉMARRAGE

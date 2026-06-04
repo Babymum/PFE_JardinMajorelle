@@ -5,12 +5,14 @@ import { Menu, Plus, Minus, Crosshair, MapPin, Bookmark, Layers, Flower2, Home, 
 import { LinearGradient } from 'expo-linear-gradient';
 import MapView, { Marker } from 'react-native-maps';
 import { getZones } from '../../api/api';
+import { useTranslation } from 'react-i18next';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const MAP_AREA_WIDTH = SCREEN_WIDTH; 
 const MAP_AREA_HEIGHT = 450; 
 
 export default function MapScreen({ navigation }) {
+  const { t, i18n } = useTranslation();
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedZone, setSelectedZone] = useState(null);
@@ -49,11 +51,12 @@ export default function MapScreen({ navigation }) {
       'musee_berbere': { type: 'MUSEUM', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_museum.png') },
       'villa_bleue': { type: 'VILLA', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') },
       'jardin_cactus': { type: 'CACTUS', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/majorelle_cactus.png') },
+      'allee_jardin': { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_pathway.png') },
+      'cafe_majorelle': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_cafe.png') },
+      'cafe_bousafsaf': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_cafe2.png') },
+      'boutique': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_boutique.png') },
+      'librairie': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_library.png') },
     };
-    
-    if (['boutique', 'librairie', 'cafe_majorelle', 'cafe_bousafsaf'].includes(typeZone)) {
-      return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_museum.png') };
-    }
     
     return designMap[typeZone] || { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') };
   }, []);
@@ -75,10 +78,10 @@ export default function MapScreen({ navigation }) {
         latitude: zone.latitude || 31.6416, 
         longitude: zone.longitude || -8.0024 
       },
-      title: zone.nom,
+      title: t('zone_name_' + zone.typeZone, zone.nom),
       zone: zone
     }));
-  }, [filteredZones]);
+  }, [filteredZones, i18n.language]);
 
   const initialRegion = {
     latitude: 31.6416,
@@ -130,7 +133,7 @@ export default function MapScreen({ navigation }) {
           <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backBtn}>
             <ArrowLeft color="#0A2B5E" size={24} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>JARDIN MAJORELLE</Text>
+          <Text style={styles.headerTitle}>{t('guide_title')}</Text>
           <View style={{ width: 44 }} />
         </View>
 
@@ -140,19 +143,19 @@ export default function MapScreen({ navigation }) {
             style={[styles.tabInactive, activeFilter === 'ALL' && styles.tabActive]} 
             onPress={() => setActiveFilter('ALL')}
           >
-            <Text style={[styles.tabTextInactive, activeFilter === 'ALL' && styles.tabTextActive]}>ALL</Text>
+            <Text style={[styles.tabTextInactive, activeFilter === 'ALL' && styles.tabTextActive]}>{t('map_filter_all')}</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.tabInactive, activeFilter === 'HISTORICAL' && styles.tabActive]} 
             onPress={() => setActiveFilter('HISTORICAL')}
           >
-            <Text style={[styles.tabTextInactive, activeFilter === 'HISTORICAL' && styles.tabTextActive]}>HISTORICAL</Text>
+            <Text style={[styles.tabTextInactive, activeFilter === 'HISTORICAL' && styles.tabTextActive]}>{t('map_filter_historical')}</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.tabInactive, activeFilter === 'BOTANICAL' && styles.tabActive]} 
             onPress={() => setActiveFilter('BOTANICAL')}
           >
-            <Text style={[styles.tabTextInactive, activeFilter === 'BOTANICAL' && styles.tabTextActive]}>BOTANICAL</Text>
+            <Text style={[styles.tabTextInactive, activeFilter === 'BOTANICAL' && styles.tabTextActive]}>{t('map_filter_botanical')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -169,7 +172,7 @@ export default function MapScreen({ navigation }) {
             {/* You are here marker */}
             <Marker
               coordinate={{ latitude: 31.6410, longitude: -8.0025 }}
-              title="Vous êtes ici"
+              title={t('map_you_are_here')}
               pinColor="#0A3A69"
             />
 
@@ -205,26 +208,26 @@ export default function MapScreen({ navigation }) {
 
         {/* Bottom Elements */}
         <View style={styles.bottomOverlay}>
-          <TouchableOpacity style={styles.layerBtn} onPress={() => Alert.alert('Layers', 'Toggle 3D Buildings / Paths')}>
+          <TouchableOpacity style={styles.layerBtn} onPress={() => Alert.alert(t('map_layers_title'), t('map_layers_desc'))}>
             <Layers color="#127A3A" size={24} />
           </TouchableOpacity>
           
           {selectedZone && (
             <View style={styles.bottomCard}>
               <Image 
-                source={selectedZone.image ? { uri: selectedZone.image } : getZoneDesignProps(selectedZone.typeZone).image} 
+                source={selectedZone.image && (selectedZone.image.startsWith('http://') || selectedZone.image.startsWith('https://')) ? { uri: selectedZone.image } : getZoneDesignProps(selectedZone.typeZone).image} 
                 style={styles.cardCover} 
               />
               <View style={styles.cardContent}>
-                <Text style={styles.cardCategory}>{getZoneDesignProps(selectedZone.typeZone).type} ZONE</Text>
-                <Text style={styles.cardTitle}>{selectedZone.nom}</Text>
-                <Text style={styles.cardDesc} numberOfLines={2}>{selectedZone.description}</Text>
+                <Text style={styles.cardCategory}>{t(`type_${getZoneDesignProps(selectedZone.typeZone).type.toLowerCase()}`)} {t('map_zone_suffix')}</Text>
+                <Text style={styles.cardTitle}>{t('zone_name_' + selectedZone.typeZone, selectedZone.nom)}</Text>
+                <Text style={styles.cardDesc} numberOfLines={2}>{t('zone_desc_' + selectedZone.typeZone, selectedZone.description)}</Text>
                 
                 <View style={styles.cardActions}>
                   <TouchableOpacity style={styles.btnPrimary} onPress={() => navigation.navigate('ZoneDetail', { zone: selectedZone })}>
-                    <Text style={styles.btnPrimaryText}>EXPLORE ZONE</Text>
+                    <Text style={styles.btnPrimaryText}>{t('map_explore_zone')}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.btnSecondary} onPress={() => Alert.alert('Favoris', 'Zone enregistrée dans vos favoris !')}>
+                  <TouchableOpacity style={styles.btnSecondary} onPress={() => Alert.alert(t('map_favorites_title'), t('map_favorites_desc'))}>
                     <Bookmark color="#0A2B5E" size={18} />
                   </TouchableOpacity>
                 </View>

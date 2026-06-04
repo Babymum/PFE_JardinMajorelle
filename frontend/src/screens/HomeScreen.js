@@ -1,25 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, I18nManager } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { QrCode, Menu, ScanFace, Compass, Bot, Sparkles, Lock } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import { getZones } from '../../api/api';
 
 export default function HomeScreen({ navigation }) {
   const { t, i18n } = useTranslation();
+  const [zones, setZones] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchZones = async () => {
+      setLoading(true);
+      try {
+        const data = await getZones();
+        setZones(data);
+      } catch (error) {
+        console.log('Error fetching zones in Home:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchZones();
+  }, []);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
-    const isRTL = lng === 'ar';
-    if (I18nManager.isRTL !== isRTL) {
-      I18nManager.forceRTL(isRTL);
-      Alert.alert(
-        'Langue mise à jour / Language Updated',
-        lng === 'ar'
-          ? 'L\'affichage de l\'application a été configuré en Arabe (RTL). Veuillez redémarrer l\'application pour appliquer le changement.'
-          : 'L\'affichage de l\'application a été reconfiguré. Veuillez redémarrer l\'application pour appliquer le changement.'
-      );
-    }
+  };
+
+  const getZoneDesignProps = (typeZone) => {
+    const designMap = {
+      'bassin': { fallbackImage: require('../../assets/majorelle_lilies.png') },
+      'jardin_bambou': { fallbackImage: require('../../assets/majorelle_bamboo.png') },
+      'musee_berbere': { fallbackImage: require('../../assets/majorelle_museum.png') },
+      'villa_bleue': { fallbackImage: require('../../assets/majorelle_villa.png') },
+      'jardin_cactus': { fallbackImage: require('../../assets/majorelle_cactus.png') },
+      'allee_jardin': { fallbackImage: require('../../assets/majorelle_pathway.png') },
+      'cafe_majorelle': { fallbackImage: require('../../assets/majorelle_cafe.png') },
+      'cafe_bousafsaf': { fallbackImage: require('../../assets/majorelle_cafe2.png') },
+      'boutique': { fallbackImage: require('../../assets/majorelle_boutique.png') },
+      'librairie': { fallbackImage: require('../../assets/majorelle_library.png') },
+    };
+    
+    return designMap[typeZone] || { fallbackImage: require('../../assets/majorelle_villa.png') };
   };
 
   return (
@@ -72,7 +97,7 @@ export default function HomeScreen({ navigation }) {
               <View>
                 <Text style={styles.mainCardTitle}>Villa</Text>
                 <Text style={styles.mainCardTitle}>Bleue</Text>
-                <Text style={styles.mainCardSubtitle}>Immersive 3D{'\n'}Experience</Text>
+                <Text style={styles.mainCardSubtitle}>{t('immersive_3d_exp')}</Text>
               </View>
               <TouchableOpacity style={styles.tourBtn} onPress={() => navigation.navigate('3DTour')}>
                 <Text style={styles.tourBtnText}>{t('start_3d_tour')}</Text>
@@ -102,68 +127,47 @@ export default function HomeScreen({ navigation }) {
         {/* Garden Wonders Section */}
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.sectionSubtitle}>THE COLLECTION</Text>
+            <Text style={styles.sectionSubtitle}>{t('the_collection')}</Text>
             <Text style={styles.sectionTitle}>{t('garden_wonders')}</Text>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('Map')}>
             <Text style={styles.viewAllText}>{t('view_all')}</Text>
           </TouchableOpacity>
         </View>
-
+ 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-          <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('Map')}>
-            <Image 
-              source={require('../../assets/majorelle_cactus.png')} 
-              style={styles.botanicalImage} 
-            />
-            <View style={styles.newBadge}><Text style={styles.newBadgeText}>NEW</Text></View>
-            <Text style={styles.botanicalTitle}>The Giant Cacti</Text>
-            <Text style={styles.botanicalDesc}>Majorelle's structural heart</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('Map')}>
-            <Image 
-              source={require('../../assets/majorelle_lilies.png')} 
-              style={styles.botanicalImage} 
-            />
-            <Text style={styles.botanicalTitle}>Floating Lilies</Text>
-            <Text style={styles.botanicalDesc}>Peaceful pond reflections</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('3DTour')}>
-            <Image 
-              source={require('../../assets/majorelle_villa.png')} 
-              style={styles.botanicalImage} 
-            />
-            <Text style={styles.botanicalTitle}>Villa Bleue</Text>
-            <Text style={styles.botanicalDesc}>Art Deco & Moorish design</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('3DTour')}>
-            <Image 
-              source={require('../../assets/majorelle_museum.png')} 
-              style={styles.botanicalImage} 
-            />
-            <Text style={styles.botanicalTitle}>Berber Museum</Text>
-            <Text style={styles.botanicalDesc}>Indigenous cultural treasures</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('Map')}>
-            <Image 
-              source={require('../../assets/majorelle_bamboo.png')} 
-              style={styles.botanicalImage} 
-            />
-            <Text style={styles.botanicalTitle}>Bamboo Forest</Text>
-            <Text style={styles.botanicalDesc}>Shaded rustling pathways</Text>
-          </TouchableOpacity>
+          {zones.map((zone, index) => {
+            const design = getZoneDesignProps(zone.typeZone);
+            const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://'));
+            const mainImage = isRemoteUrl ? { uri: zone.image } : design.fallbackImage;
+            return (
+              <TouchableOpacity 
+                key={zone._id} 
+                style={styles.botanicalCard} 
+                onPress={() => navigation.navigate('ZoneDetail', { zone })}
+              >
+                <Image 
+                  source={mainImage} 
+                  style={styles.botanicalImage} 
+                />
+                {index === 0 && (
+                  <View style={styles.newBadge}>
+                    <Text style={styles.newBadgeText}>{t('badge_new')}</Text>
+                  </View>
+                )}
+                <Text style={styles.botanicalTitle}>{t('zone_name_' + zone.typeZone, zone.nom)}</Text>
+                <Text style={styles.botanicalDesc} numberOfLines={1}>{t('zone_desc_' + zone.typeZone, zone.description)}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
-
+ 
         {/* AI Curator Section */}
         <View style={styles.aiCard}>
           <Bot color="#4E5E2D" size={28} />
           <Text style={styles.aiLabel}>{t('ai_curator')}</Text>
-          <Text style={styles.aiQuote}>"Nature is the greatest{'\n'}artist of all."</Text>
-          <Text style={styles.aiAuthor}>— Yves Saint Laurent</Text>
+          <Text style={styles.aiQuote}>{t('quote_text')}</Text>
+          <Text style={styles.aiAuthor}>{t('quote_author')}</Text>
           <TouchableOpacity style={styles.aiBtn} onPress={() => navigation.navigate('Guide')}>
             <Text style={styles.aiBtnText}>{t('talk_to_guide')}</Text>
           </TouchableOpacity>

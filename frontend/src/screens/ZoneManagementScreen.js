@@ -5,8 +5,10 @@ import { LogOut, Calendar, Search, Filter, EyeOff, Plus, X, Trash2, ArrowLeft } 
 import { getZones, createZone, updateZone, deleteZone } from '../../api/api';
 import { Modal } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function ZoneManagementScreen({ route, navigation }) {
+  const { t } = useTranslation();
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -47,8 +49,16 @@ export default function ZoneManagementScreen({ route, navigation }) {
         return { type: 'VILLA', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') };
       case 'jardin_cactus':
         return { type: 'CACTUS', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/majorelle_cactus.png') };
-      case 'boutique': case 'librairie': case 'cafe_majorelle': case 'cafe_bousafsaf':
-        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_museum.png') };
+      case 'allee_jardin':
+        return { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_pathway.png') };
+      case 'cafe_majorelle':
+        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_cafe.png') };
+      case 'cafe_bousafsaf':
+        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_cafe2.png') };
+      case 'boutique':
+        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_boutique.png') };
+      case 'librairie':
+        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_library.png') };
       default:
         return { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') };
     }
@@ -85,20 +95,20 @@ export default function ZoneManagementScreen({ route, navigation }) {
       setLoading(true);
       fetchData();
     } catch (error) {
-      Alert.alert('Erreur', 'Impossible de sauvegarder la zone');
+      Alert.alert(t('manage_error'), t('manage_err_save'));
     }
   };
 
   const handleDelete = async (id) => {
-    Alert.alert('Supprimer', 'Voulez-vous vraiment supprimer cette zone ?', [
-      { text: 'Annuler', style: 'cancel' },
-      { text: 'Supprimer', style: 'destructive', onPress: async () => {
+    Alert.alert(t('manage_confirm_delete'), t('manage_delete_desc'), [
+      { text: t('manage_cancel'), style: 'cancel' },
+      { text: t('manage_confirm_delete'), style: 'destructive', onPress: async () => {
           try {
             await deleteZone(id, adminToken);
             setLoading(true);
             fetchData();
           } catch (e) {
-            Alert.alert('Erreur', 'Impossible de supprimer la zone');
+            Alert.alert(t('manage_error'), t('manage_err_delete'));
           }
         } 
       }
@@ -106,9 +116,9 @@ export default function ZoneManagementScreen({ route, navigation }) {
   };
 
   const handleLogout = () => {
-    Alert.alert('Déconnexion', 'Voulez-vous vraiment vous déconnecter ?', [
-      { text: 'Annuler', style: 'cancel' },
-      { text: 'Déconnecter', style: 'destructive', onPress: async () => {
+    Alert.alert(t('manage_confirm_logout'), t('manage_logout_desc'), [
+      { text: t('manage_cancel'), style: 'cancel' },
+      { text: t('manage_confirm_logout'), style: 'destructive', onPress: async () => {
           await logout();
           navigation.replace('MainTabs');
         } 
@@ -124,7 +134,7 @@ export default function ZoneManagementScreen({ route, navigation }) {
         <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} style={styles.backBtn}>
           <ArrowLeft color="#0A2B5E" size={24} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>JARDIN MAJORELLE</Text>
+        <Text style={styles.headerTitle}>{t('guide_title')}</Text>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
           <LogOut color="#D9534F" size={20} />
         </TouchableOpacity>
@@ -133,26 +143,26 @@ export default function ZoneManagementScreen({ route, navigation }) {
       <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
         {/* Title Group */}
         <View style={styles.titleSection}>
-          <Text style={styles.subtitle}>CONNECTED INFRASTRUCTURE</Text>
+          <Text style={styles.subtitle}>{t('manage_infra')}</Text>
           <View>
-            <Text style={styles.title}>Zone Management</Text>
+            <Text style={styles.title}>{t('manage_title')}</Text>
             <View style={styles.titleUnderline} />
           </View>
         </View>
 
         {/* Top Cards block */}
         <View style={styles.totalZonesCard}>
-          <Text style={styles.cardHeaderLight}>TOTAL ZONES</Text>
+          <Text style={styles.cardHeaderLight}>{t('manage_total_zones')}</Text>
           <Text style={styles.cardHugeTextLight}>{zones.length < 10 ? `0${zones.length}` : zones.length}</Text>
-          <Text style={styles.cardSubLight}>Synced from /api/zones</Text>
+          <Text style={styles.cardSubLight}>{t('manage_synced')}</Text>
           {/* Watermark grid could be represented with absolute positioning, omitting for simplicity */}
         </View>
 
         <View style={styles.activeStatusCard}>
-          <Text style={styles.cardHeaderDark}>ACTIVE STATUS</Text>
+          <Text style={styles.cardHeaderDark}>{t('manage_active_status')}</Text>
           <View style={styles.activeRow}>
             <Text style={styles.cardHugeTextDark}>18</Text>
-            <Text style={styles.activeLabel}>Live</Text>
+            <Text style={styles.activeLabel}>{t('manage_live')}</Text>
           </View>
           <View style={styles.progressBarBg}>
             <View style={styles.progressBarFill} />
@@ -161,16 +171,16 @@ export default function ZoneManagementScreen({ route, navigation }) {
 
         <View style={styles.rowCards}>
           <View style={styles.halfCard}>
-            <Text style={styles.cardHeaderDark}>MAINTENANCE</Text>
+            <Text style={styles.cardHeaderDark}>{t('manage_maintenance')}</Text>
             <Text style={styles.cardHugeTextDark}>04</Text>
             <View style={styles.scheduledRow}>
               <Calendar color="#868305" size={12} />
-              <Text style={styles.scheduledText}>Scheduled for Week 42</Text>
+              <Text style={styles.scheduledText}>{t('manage_scheduled')}</Text>
             </View>
           </View>
 
           <View style={styles.halfCard}>
-            <Text style={styles.cardHeaderDark}>HIDDEN ZONES</Text>
+            <Text style={styles.cardHeaderDark}>{t('manage_hidden')}</Text>
             <Text style={styles.cardHugeTextDark}>02</Text>
             <View style={styles.hiddenDotsRow}>
               <View style={[styles.dot, {backgroundColor: '#0A2B5E'}]} />
@@ -182,12 +192,12 @@ export default function ZoneManagementScreen({ route, navigation }) {
         {/* List Section */}
         <View style={styles.listSection}>
           <View style={styles.listHeaderRow}>
-            <Text style={styles.listTitle}>Connected{'\n'}Zones</Text>
+            <Text style={styles.listTitle}>{t('manage_connected_title')}</Text>
             <View style={styles.searchBox}>
               <Search color="#68778D" size={16} />
               <TextInput 
                 style={styles.searchInput}
-                placeholder="Search nomadic zones"
+                placeholder={t('manage_search_placeholder')}
                 placeholderTextColor="#8C9BB0"
               />
             </View>
@@ -197,9 +207,9 @@ export default function ZoneManagementScreen({ route, navigation }) {
           </View>
 
           <View style={styles.tableHeaderRow}>
-            <Text style={[styles.tableColHeader, { flex: 2.5 }]}>ZONE NAME (NOM)</Text>
-            <Text style={[styles.tableColHeader, { flex: 1.5 }]}>TYPE{'\n'}(TYPE ZONE)</Text>
-            <Text style={[styles.tableColHeader, { flex: 1, textAlign: 'right' }]}>ACTIONS</Text>
+            <Text style={[styles.tableColHeader, { flex: 2.5 }]}>{t('manage_col_name')}</Text>
+            <Text style={[styles.tableColHeader, { flex: 1.5 }]}>{t('manage_col_type')}</Text>
+            <Text style={[styles.tableColHeader, { flex: 1, textAlign: 'right' }]}>{t('manage_col_actions')}</Text>
           </View>
 
           {loading ? (
@@ -219,13 +229,13 @@ export default function ZoneManagementScreen({ route, navigation }) {
 
                   <View style={[styles.tableCell, { flex: 1.5, justifyContent: 'center' }]}>
                     <View style={[styles.badge, { backgroundColor: props.typeColor }]}>
-                      <Text style={[styles.badgeText, { color: props.typeTextColor }]}>{props.type}</Text>
+                      <Text style={[styles.badgeText, { color: props.typeTextColor }]}>{t(`type_${props.type.toLowerCase()}`)}</Text>
                     </View>
                   </View>
 
                   <View style={[styles.tableCell, { flex: 1, justifyContent: 'center', alignItems: 'flex-end', flexDirection: 'row', gap: 10 }]}>
                     <TouchableOpacity onPress={() => openModal(zone)}>
-                        <Text style={{color: '#0A2B5E', fontSize: 10, fontWeight: '700'}}>EDIT</Text>
+                        <Text style={{color: '#0A2B5E', fontSize: 10, fontWeight: '700'}}>{t('manage_edit')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleDelete(zone._id)}>
                         <Trash2 color="#D9534F" size={14} />
@@ -237,7 +247,7 @@ export default function ZoneManagementScreen({ route, navigation }) {
           )}
 
           <View style={styles.paginationRow}>
-            <Text style={styles.showingText}>SHOWING {zones.length}</Text>
+            <Text style={styles.showingText}>{t('manage_showing')} {zones.length}</Text>
             <View style={styles.pageBtns}>
               <TouchableOpacity style={styles.pageBtn}><Text style={styles.pageBtnText}>{'<'}</Text></TouchableOpacity>
               <TouchableOpacity style={styles.pageBtn}><Text style={styles.pageBtnText}>{'>'}</Text></TouchableOpacity>
@@ -260,14 +270,14 @@ export default function ZoneManagementScreen({ route, navigation }) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{editingZone ? 'Modifier Zone' : 'Nouvelle Zone'}</Text>
+              <Text style={styles.modalTitle}>{editingZone ? t('manage_edit_zone') : t('manage_new_zone')}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <X color="#0A2B5E" size={24} />
               </TouchableOpacity>
             </View>
             
             <ScrollView style={styles.modalForm}>
-              <Text style={styles.inputLabel}>Nom de la zone</Text>
+              <Text style={styles.inputLabel}>{t('manage_field_name')}</Text>
               <TextInput 
                 style={styles.modalInput} 
                 value={formData.nom} 
@@ -275,7 +285,7 @@ export default function ZoneManagementScreen({ route, navigation }) {
                 placeholder="Ex: Le Grand Bassin"
               />
 
-              <Text style={styles.inputLabel}>Type de zone</Text>
+              <Text style={styles.inputLabel}>{t('manage_field_type')}</Text>
               <TextInput 
                 style={styles.modalInput} 
                 value={formData.typeZone} 
@@ -283,7 +293,7 @@ export default function ZoneManagementScreen({ route, navigation }) {
                 placeholder="Ex: bassin, jardin_cactus..."
               />
 
-              <Text style={styles.inputLabel}>Description</Text>
+              <Text style={styles.inputLabel}>{t('manage_field_desc')}</Text>
               <TextInput 
                 style={[styles.modalInput, { height: 80 }]} 
                 value={formData.description} 
@@ -292,7 +302,7 @@ export default function ZoneManagementScreen({ route, navigation }) {
                 multiline
               />
 
-              <Text style={styles.inputLabel}>Position 3D (X, Y, Z)</Text>
+              <Text style={styles.inputLabel}>{t('manage_field_pos')}</Text>
               <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <TextInput 
                   style={[styles.modalInput, {flex: 1, marginRight: 5}]} 
@@ -318,7 +328,7 @@ export default function ZoneManagementScreen({ route, navigation }) {
               </View>
 
               <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-                <Text style={styles.saveBtnText}>SAUVEGARDER</Text>
+                <Text style={styles.saveBtnText}>{t('manage_save')}</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>

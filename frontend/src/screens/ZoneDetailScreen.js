@@ -5,8 +5,10 @@ import { ArrowLeft, MapPin } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AudioPlayer from '../components/AudioPlayer';
 import { trackScreen, trackZoneEngagement } from '../services/analytics';
+import { useTranslation } from 'react-i18next';
 
 export default function ZoneDetailScreen({ route, navigation }) {
+  const { t } = useTranslation();
   const { zone } = route.params;
 
   useEffect(() => {
@@ -25,17 +27,19 @@ export default function ZoneDetailScreen({ route, navigation }) {
       'musee_berbere': { type: 'MUSEUM', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', fallbackImage: require('../../assets/majorelle_museum.png') },
       'villa_bleue': { type: 'VILLA', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', fallbackImage: require('../../assets/majorelle_villa.png') },
       'jardin_cactus': { type: 'CACTUS', typeColor: '#E0DDD3', typeTextColor: '#68778D', fallbackImage: require('../../assets/majorelle_cactus.png') },
+      'allee_jardin': { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', fallbackImage: require('../../assets/majorelle_pathway.png') },
+      'cafe_majorelle': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', fallbackImage: require('../../assets/majorelle_cafe.png') },
+      'cafe_bousafsaf': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', fallbackImage: require('../../assets/majorelle_cafe2.png') },
+      'boutique': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', fallbackImage: require('../../assets/majorelle_boutique.png') },
+      'librairie': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', fallbackImage: require('../../assets/majorelle_library.png') },
     };
-    
-    if (['boutique', 'librairie', 'cafe_majorelle', 'cafe_bousafsaf'].includes(typeZone)) {
-      return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', fallbackImage: require('../../assets/majorelle_museum.png') };
-    }
     
     return designMap[typeZone] || { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', fallbackImage: require('../../assets/majorelle_villa.png') };
   };
 
   const design = getZoneDesignProps(zone.typeZone);
-  const mainImage = zone.image ? { uri: zone.image } : design.fallbackImage;
+  const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://'));
+  const mainImage = isRemoteUrl ? { uri: zone.image } : design.fallbackImage;
 
   return (
     <View style={styles.container}>
@@ -50,7 +54,7 @@ export default function ZoneDetailScreen({ route, navigation }) {
           <TouchableOpacity 
             onPress={handleBack} 
             style={styles.backBtn}
-            accessibilityLabel="Retourner à l'écran précédent"
+            accessibilityLabel={t('auth_back')}
             accessibilityRole="button"
           >
             <ArrowLeft color="#FFF" size={24} />
@@ -61,19 +65,19 @@ export default function ZoneDetailScreen({ route, navigation }) {
         <View style={styles.contentContainer}>
           {/* Category Badge */}
           <View style={[styles.badge, { backgroundColor: design.typeColor }]}>
-            <Text style={[styles.badgeText, { color: design.typeTextColor }]}>{design.type} ZONE</Text>
+            <Text style={[styles.badgeText, { color: design.typeTextColor }]}>{t(`type_${design.type.toLowerCase()}`)} {t('map_zone_suffix')}</Text>
           </View>
 
           {/* Title */}
-          <Text style={styles.title}>{zone.nom}</Text>
+          <Text style={styles.title}>{t('zone_name_' + zone.typeZone, zone.nom)}</Text>
 
           {/* Location details */}
           <View style={styles.locationRow}>
             <MapPin color="#127A3A" size={16} />
             <Text style={styles.locationText}>
               {zone.latitude && zone.longitude 
-                ? `Coordonnées : ${zone.latitude.toFixed(4)}°, ${zone.longitude.toFixed(4)}°` 
-                : 'Jardin Majorelle, Marrakech'}
+                ? `${t('detail_coordinates')}${zone.latitude.toFixed(4)}°, ${zone.longitude.toFixed(4)}°` 
+                : t('ar_garden_entrance')}
             </Text>
           </View>
 
@@ -83,13 +87,13 @@ export default function ZoneDetailScreen({ route, navigation }) {
           ) : null}
 
           {/* Description */}
-          <Text style={styles.sectionTitle}>Histoire & Botanique</Text>
-          <Text style={styles.descriptionText}>{zone.description}</Text>
+          <Text style={styles.sectionTitle}>{t('detail_history_botany')}</Text>
+          <Text style={styles.descriptionText}>{t('zone_desc_' + zone.typeZone, zone.description)}</Text>
 
           {/* Gallery */}
           {zone.gallery && zone.gallery.length > 0 ? (
             <View style={styles.galleryContainer}>
-              <Text style={styles.sectionTitle}>Galerie Photo</Text>
+              <Text style={styles.sectionTitle}>{t('detail_gallery')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryScroll}>
                 {zone.gallery.map((imgUrl, idx) => (
                   <View key={idx} style={styles.galleryCard}>
@@ -103,8 +107,8 @@ export default function ZoneDetailScreen({ route, navigation }) {
           {/* Additional info */}
           {zone.informationsComplementaires ? (
             <View style={styles.infoBox}>
-              <Text style={styles.infoTitle}>Informations Visiteurs</Text>
-              <Text style={styles.infoText}>{zone.informationsComplementaires}</Text>
+              <Text style={styles.infoTitle}>{t('detail_visitor_info')}</Text>
+              <Text style={styles.infoText}>{t('zone_info_' + zone.typeZone, zone.informationsComplementaires)}</Text>
             </View>
           ) : null}
         </View>

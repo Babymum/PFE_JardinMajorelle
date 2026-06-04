@@ -1,10 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Box, Maximize2, PlayCircle } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
+import { getZones } from '../../api/api';
 
 export default function TourScreen({ navigation }) {
+  const { t } = useTranslation();
+  const [zones, setZones] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchZones = async () => {
+      setLoading(true);
+      try {
+        const data = await getZones();
+        setZones(data);
+      } catch (error) {
+        console.log('Error fetching zones in Tour:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchZones();
+  }, []);
+
+  const getZoneDesignProps = (typeZone) => {
+    const designMap = {
+      'bassin': { fallbackImage: require('../../assets/majorelle_lilies.png') },
+      'jardin_bambou': { fallbackImage: require('../../assets/majorelle_bamboo.png') },
+      'musee_berbere': { fallbackImage: require('../../assets/majorelle_museum.png') },
+      'villa_bleue': { fallbackImage: require('../../assets/majorelle_villa.png') },
+      'jardin_cactus': { fallbackImage: require('../../assets/majorelle_cactus.png') },
+      'allee_jardin': { fallbackImage: require('../../assets/majorelle_pathway.png') },
+      'cafe_majorelle': { fallbackImage: require('../../assets/majorelle_cafe.png') },
+      'cafe_bousafsaf': { fallbackImage: require('../../assets/majorelle_cafe2.png') },
+      'boutique': { fallbackImage: require('../../assets/majorelle_boutique.png') },
+      'librairie': { fallbackImage: require('../../assets/majorelle_library.png') },
+    };
+    
+    return designMap[typeZone] || { fallbackImage: require('../../assets/majorelle_villa.png') };
+  };
+
   const handleRetour = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
@@ -15,22 +53,22 @@ export default function TourScreen({ navigation }) {
 
   const handleFullscreen = () => {
     Alert.alert(
-      'Plein Écran (Aperçu)',
-      'Le mode gyroscope et plein écran 360° sera activé dans la version finale du pilote.'
+      t('tour_fullscreen_title'),
+      t('tour_fullscreen_desc')
     );
   };
 
   const handleStartTour = () => {
     Alert.alert(
-      'Visite Guidée 3D (Aperçu)',
-      'Démarre un parcours narratif en 3D guidé à travers les points d\'intérêt historiques et botaniques du jardin.'
+      t('tour_guided_title'),
+      t('tour_guided_desc')
     );
   };
 
   const handleSelectZone = (zoneName) => {
     Alert.alert(
-      'Sélection de Zone (Aperçu)',
-      `Chargement du modèle 3D haute définition pour la zone : "${zoneName}" (Bientôt disponible).`
+      t('tour_select_zone_title'),
+      t('tour_select_zone_desc', { zoneName })
     );
   };
 
@@ -49,7 +87,7 @@ export default function TourScreen({ navigation }) {
             <TouchableOpacity style={styles.backBtn} onPress={handleRetour}>
               <ArrowLeft color="#FFF" size={24} />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>VISITE VIRTUELLE 3D</Text>
+            <Text style={styles.headerTitle}>{t('tour_title')}</Text>
             <TouchableOpacity style={styles.expandBtn} onPress={handleFullscreen}>
               <Maximize2 color="#FFF" size={20} />
             </TouchableOpacity>
@@ -60,25 +98,27 @@ export default function TourScreen({ navigation }) {
             <TouchableOpacity style={styles.playBtn} onPress={handleStartTour}>
                <PlayCircle color="#FFF" size={64} strokeWidth={1.5} />
             </TouchableOpacity>
-            <Text style={styles.panoText}>Faites glisser pour explorer le panorama 360°</Text>
+            <Text style={styles.panoText}>{t('tour_gyro_info')}</Text>
           </View>
 
           {/* Bottom Thumbnails */}
           <View style={styles.bottomSection}>
-             <Text style={styles.zoneText}>PREVIEW DES ZONES IMMERSIVES</Text>
+             <Text style={styles.zoneText}>{t('tour_preview_zones')}</Text>
              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.gallery}>
-                <TouchableOpacity style={[styles.thumbBox, styles.thumbBoxActive]} onPress={() => handleSelectZone('La Villa Bleue')}>
-                   <ImageBackground source={require('../../assets/majorelle_villa.png')} style={styles.thumbImg} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.thumbBox} onPress={() => handleSelectZone('Jardin des Cactus')}>
-                   <ImageBackground source={require('../../assets/majorelle_cactus.png')} style={styles.thumbImg} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.thumbBox} onPress={() => handleSelectZone('Musée Berbère')}>
-                   <ImageBackground source={require('../../assets/majorelle_museum.png')} style={styles.thumbImg} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.thumbBox} onPress={() => handleSelectZone('Forêt de Bambous')}>
-                   <ImageBackground source={require('../../assets/majorelle_bamboo.png')} style={styles.thumbImg} />
-                </TouchableOpacity>
+                {zones.map((zone, index) => {
+                  const design = getZoneDesignProps(zone.typeZone);
+                  const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://'));
+                  const mainImage = isRemoteUrl ? { uri: zone.image } : design.fallbackImage;
+                  return (
+                    <TouchableOpacity 
+                      key={zone._id} 
+                      style={[styles.thumbBox, index === 0 && styles.thumbBoxActive]} 
+                      onPress={() => handleSelectZone(t('zone_name_' + zone.typeZone, zone.nom))}
+                    >
+                      <ImageBackground source={mainImage} style={styles.thumbImg} />
+                    </TouchableOpacity>
+                  );
+                })}
              </ScrollView>
           </View>
         </LinearGradient>

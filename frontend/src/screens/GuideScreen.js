@@ -17,18 +17,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, Send, Bot, Clock, Leaf, Volume2, ArrowLeft } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getZones, sendMessageToGuide } from '../../api/api';
+import { useTranslation } from 'react-i18next';
 
 export default function GuideScreen({ navigation }) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([
     {
       id: 'welcome_1',
       sender: 'bot',
-      text: "Hello! I am your AI companion, trained on the history, botany, and architecture of the Jardin Majorelle. How can I enrich your journey today?"
+      text: ''
     }
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [gardenContext, setGardenContext] = useState('Jardin Majorelle in Marrakech.');
+  const [zones, setZones] = useState([]);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const scrollViewRef = useRef(null);
 
@@ -53,8 +56,9 @@ export default function GuideScreen({ navigation }) {
   useEffect(() => {
     const fetchContext = async () => {
       try {
-        const zones = await getZones();
-        const briefContext = zones.map(z => `${z.nom}: ${z.description ? z.description.substring(0, 80) : 'Point of interest'}`).join('\n');
+        const data = await getZones();
+        setZones(data);
+        const briefContext = data.map(z => `${z.nom}: ${z.description ? z.description.substring(0, 80) : 'Point of interest'}`).join('\n');
         setGardenContext(briefContext);
       } catch (err) {
         console.warn("Could not fetch garden context", err);
@@ -111,12 +115,12 @@ export default function GuideScreen({ navigation }) {
         playElevenLabsAudio(reply);
 
       } catch (fallbackError) {
-        console.error("❌ Client-side fallback also failed:", fallbackError.message);
+        console.warn("❌ Client-side fallback also failed:", fallbackError.message);
         
         const errorMsg = { 
           id: Date.now().toString(), 
           sender: 'bot', 
-          text: 'Welcome to Jardin Majorelle! I am operating in local fallback mode. The garden features the stunning blue villa, Berber museum, cactus gardens, water lilies, and bamboo forest. How can I help you explore?' 
+          text: t('guide_local_fallback') 
         };
         setMessages(prev => [...prev, errorMsg]);
         setIsTyping(false);
@@ -129,8 +133,25 @@ export default function GuideScreen({ navigation }) {
     try {
       console.log('Synthesizing speech with ElevenLabs:', text);
     } catch (error) {
-      console.error('ElevenLabs Audio Error:', error);
+      console.warn('ElevenLabs Audio Error:', error.message);
     }
+  };
+
+  const getZoneDesignProps = (typeZone) => {
+    const designMap = {
+      'bassin': { fallbackImage: require('../../assets/majorelle_lilies.png') },
+      'jardin_bambou': { fallbackImage: require('../../assets/majorelle_bamboo.png') },
+      'musee_berbere': { fallbackImage: require('../../assets/majorelle_museum.png') },
+      'villa_bleue': { fallbackImage: require('../../assets/majorelle_villa.png') },
+      'jardin_cactus': { fallbackImage: require('../../assets/majorelle_cactus.png') },
+      'allee_jardin': { fallbackImage: require('../../assets/majorelle_pathway.png') },
+      'cafe_majorelle': { fallbackImage: require('../../assets/majorelle_cafe.png') },
+      'cafe_bousafsaf': { fallbackImage: require('../../assets/majorelle_cafe2.png') },
+      'boutique': { fallbackImage: require('../../assets/majorelle_boutique.png') },
+      'librairie': { fallbackImage: require('../../assets/majorelle_library.png') },
+    };
+    
+    return designMap[typeZone] || { fallbackImage: require('../../assets/majorelle_villa.png') };
   };
 
   return (
@@ -145,7 +166,7 @@ export default function GuideScreen({ navigation }) {
           <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backBtn}>
             <ArrowLeft color="#0A2B5E" size={24} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>JARDIN MAJORELLE</Text>
+          <Text style={styles.headerTitle}>{t('guide_title')}</Text>
           <View style={{ width: 44 }} />
         </View>
 
@@ -156,52 +177,35 @@ export default function GuideScreen({ navigation }) {
           onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
         >
           <View style={styles.titleSection}>
-            <Text style={styles.subtitle}>DIGITAL CONCIERGE</Text>
-            <Text style={styles.title1}>Explore the</Text>
-            <Text style={styles.title2}>secrets of the <Text style={styles.titleHighlight}>Blue Oasis</Text></Text>
+            <Text style={styles.subtitle}>{t('guide_concierge')}</Text>
+            <Text style={styles.title1}>{t('guide_explore_prefix')}</Text>
+            <Text style={styles.title2}>{t('guide_explore_middle')} <Text style={styles.titleHighlight}>{t('guide_explore_highlight')}</Text></Text>
             <Text style={styles.description}>
-              I am your AI companion, trained on the history, botany, and architecture of the Jardin Majorelle. How can I enrich your journey today?
+              {t('guide_bot_welcome')}
             </Text>
           </View>
 
           {/* Interactive Zone Gallery */}
           <View style={styles.galleryWrapper}>
-            <Text style={styles.galleryTitle}>TAP A ZONE TO INQUIRE</Text>
+            <Text style={styles.galleryTitle}>{t('guide_tap_zone')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryContainer}>
-              <TouchableOpacity style={styles.galleryCard} onPress={() => handleSend("Tell me about the Villa Bleue (Villa Oasis)!")}>
-                <Image source={require('../../assets/majorelle_villa.png')} style={styles.galleryImage} />
-                <LinearGradient colors={['transparent', 'rgba(10, 43, 94, 0.95)']} style={styles.galleryGradient}>
-                  <Text style={styles.galleryCardText}>Villa Bleue</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.galleryCard} onPress={() => handleSend("Tell me about the Cactus Garden!")}>
-                <Image source={require('../../assets/majorelle_cactus.png')} style={styles.galleryImage} />
-                <LinearGradient colors={['transparent', 'rgba(10, 43, 94, 0.95)']} style={styles.galleryGradient}>
-                  <Text style={styles.galleryCardText}>Cactus Garden</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.galleryCard} onPress={() => handleSend("Tell me about the Floating Water Lilies!")}>
-                <Image source={require('../../assets/majorelle_lilies.png')} style={styles.galleryImage} />
-                <LinearGradient colors={['transparent', 'rgba(10, 43, 94, 0.95)']} style={styles.galleryGradient}>
-                  <Text style={styles.galleryCardText}>Water Lilies</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.galleryCard} onPress={() => handleSend("Tell me about the Berber Museum!")}>
-                <Image source={require('../../assets/majorelle_museum.png')} style={styles.galleryImage} />
-                <LinearGradient colors={['transparent', 'rgba(10, 43, 94, 0.95)']} style={styles.galleryGradient}>
-                  <Text style={styles.galleryCardText}>Berber Museum</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.galleryCard} onPress={() => handleSend("Tell me about the Bamboo Forest!")}>
-                <Image source={require('../../assets/majorelle_bamboo.png')} style={styles.galleryImage} />
-                <LinearGradient colors={['transparent', 'rgba(10, 43, 94, 0.95)']} style={styles.galleryGradient}>
-                  <Text style={styles.galleryCardText}>Bamboo Forest</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+              {zones.map((zone) => {
+                const design = getZoneDesignProps(zone.typeZone);
+                const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://'));
+                const mainImage = isRemoteUrl ? { uri: zone.image } : design.fallbackImage;
+                return (
+                  <TouchableOpacity 
+                    key={zone._id} 
+                    style={styles.galleryCard} 
+                    onPress={() => handleSend(t('guide_prompt_prefix', { name: t('zone_name_' + zone.typeZone, zone.nom) }))}
+                  >
+                    <Image source={mainImage} style={styles.galleryImage} />
+                    <LinearGradient colors={['transparent', 'rgba(10, 43, 94, 0.95)']} style={styles.galleryGradient}>
+                      <Text style={styles.galleryCardText}>{t('zone_name_' + zone.typeZone, zone.nom)}</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
           </View>
 
@@ -221,13 +225,15 @@ export default function GuideScreen({ navigation }) {
                   <View key={msg.id} style={styles.botMessageBlock}>
                     <View style={styles.botIconRow}>
                       <View style={styles.botIconBg}><Bot color="#FFF" size={16} /></View>
-                      <Text style={styles.botName}>MAJORELLE GUIDE</Text>
-                      <TouchableOpacity onPress={() => playElevenLabsAudio(msg.text)} style={{ marginLeft: 'auto' }}>
+                      <Text style={styles.botName}>{t('guide_bot_name')}</Text>
+                      <TouchableOpacity onPress={() => playElevenLabsAudio(msg.id === 'welcome_1' ? t('guide_bot_welcome') : msg.text)} style={{ marginLeft: 'auto' }}>
                         <Volume2 color="#0A2B5E" size={16} />
                       </TouchableOpacity>
                     </View>
                     <View style={styles.botBubble}>
-                      <Text style={styles.botDesc}>{msg.text}</Text>
+                      <Text style={styles.botDesc}>
+                        {msg.id === 'welcome_1' ? t('guide_bot_welcome') : msg.text}
+                      </Text>
                     </View>
                   </View>
                 );
@@ -238,7 +244,7 @@ export default function GuideScreen({ navigation }) {
                <View style={styles.botMessageBlock}>
                  <View style={styles.botIconRow}>
                   <View style={styles.botIconBg}><Bot color="#FFF" size={16} /></View>
-                  <Text style={styles.botName}>MAJORELLE GUIDE IS TYPING...</Text>
+                  <Text style={styles.botName}>{t('guide_bot_typing')}</Text>
                 </View>
                 <ActivityIndicator size="small" color="#0A2B5E" style={{ alignSelf: 'flex-start', marginLeft: 20 }} />
               </View>
@@ -254,12 +260,12 @@ export default function GuideScreen({ navigation }) {
           { bottom: isKeyboardVisible ? (Platform.OS === 'ios' ? 10 : 15) : 90 }
         ]}>
           <View style={styles.inputWrapper}>
-            <TouchableOpacity style={styles.addBtn} onPress={() => Alert.alert('Attachment', 'Attach an image to the AI Guide')}>
+            <TouchableOpacity style={styles.addBtn} onPress={() => Alert.alert(t('guide_attachment_title'), t('guide_attachment_desc'))}>
               <Plus color="#FFF" size={20} />
             </TouchableOpacity>
             <TextInput 
               style={styles.textInput} 
-              placeholder="Ask me anything..." 
+              placeholder={t('guide_input_placeholder')} 
               placeholderTextColor="#8C9BB0"
               value={inputText}
               onChangeText={setInputText}
