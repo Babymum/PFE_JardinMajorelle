@@ -17,7 +17,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus, Send, Bot, Volume2, ArrowLeft, Pause, Play } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Speech from 'expo-speech';
-import { getZones, sendMessageToGuide } from '../../api/api';
+import { Audio } from 'expo-av';
+import { getZones, sendMessageToGuide, synthesizeSpeech } from '../../api/api';
 
 export default function GuideScreen({ navigation }) {
   const [messages, setMessages] = useState([
@@ -32,61 +33,61 @@ export default function GuideScreen({ navigation }) {
       _id: 'default-villa',
       nom: 'Villa Bleue',
       typeZone: 'villa_bleue',
-      description: 'Véritable symbole du Jardin Majorelle, la Villa Bleue attire le regard par son architecture unique et son célèbre bleu intense devenu emblématique dans le monde entier. Inspirée des influences marocaines et artistiques, elle incarne la rencontre entre créativité, élégance et patrimoine culturel. Chaque détail de la villa célèbre l’imaginaire de Jacques Majorelle et son amour pour Marrakech. La façade cobalt, les balcons ornés et les jardins luxuriants qui l’entourent créent une atmosphère magique et intemporelle. La Villa Bleue est un lieu de contemplation et d’émerveillement, invitant les visiteurs à plonger dans l’univers artistique du jardin tout en découvrant l’histoire fascinante de ce lieu unique au monde.',
+      description: 'La Villa Bleue est un symbole du Jardin Majorelle. Elle se distingue par son bleu cobalt, ses balcons et ses jardins luxuriants.',
     },
     {
       _id: 'default-cactus',
       nom: 'Jardins de Cactus',
       typeZone: 'jardin_cactus',
-      description: 'Le jardin des cactus dévoile une collection fascinante de plantes venues des régions arides du monde entier. Entre formes sculpturales, textures étonnantes et silhouettes majestueuses, chaque cactus raconte l’ingéniosité de la nature face au désert. Cet espace offre un contraste saisissant entre la force minérale des plantes et la douceur artistique du jardin. C’est un lieu de découverte et d’émerveillement où les visiteurs peuvent admirer des espèces rares et exotiques, tout en ressentant la magie du Jardin Majorelle à travers la diversité botanique et l’atmosphère unique qui règne dans ce coin du jardin.',
+      description: 'Le jardin de cactus présente une collection de plantes grasses, d’agaves et d’aloès venues de climats arides.',
     },
     {
       _id: 'default-lilies',
       nom: 'Bassin central',
       typeZone: 'bassin',
-      description: 'Au cœur du jardin, le bassin apporte une sensation immédiate de calme et de fraîcheur. Ses eaux paisibles reflètent les nuances éclatantes du bleu Majorelle, les silhouettes des palmiers et la végétation luxuriante qui l’entoure. Le murmure délicat de l’eau accompagne les visiteurs dans une parenthèse de sérénité où nature et poésie semblent dialoguer en harmonie. Le bassin central est un véritable havre de paix au sein du Jardin Majorelle, invitant à la contemplation et à la rêverie. Il accueille des nénuphars, des lotus et d’autres plantes aquatiques qui ajoutent une touche de mystère et de beauté à ce lieu emblématique du jardin.',
+      description: 'Le bassin central apporte calme et fraîcheur au jardin avec ses nénuphars et ses reflets bleus.',
     },
     {
       _id: 'default-museum',
       nom: 'Musée Berbère',
       typeZone: 'musee_berbere',
-      description: 'Le Musée Berbère invite les visiteurs à découvrir la richesse et la diversité de la culture amazighe à travers une collection exceptionnelle d’objets traditionnels, bijoux, textiles et œuvres artisanales. Plus qu’un musée, c’est un voyage au cœur de l’histoire, des savoir-faire et des traditions ancestrales du Maroc. Installé dans l’ancienne maison du peintre Jacques Majorelle, le musée offre un cadre intime et authentique pour explorer les trésors de l’art berbère. Chaque pièce exposée raconte une histoire, témoignant de la créativité et de l’identité d’un peuple fier de son héritage. Le Musée Berbère est un lieu de découverte culturelle incontournable au sein du Jardin Majorelle, permettant aux visiteurs de mieux comprendre les racines et les influences qui ont façonné ce jardin unique au monde.',
+      description: 'Le Musée Berbère présente des objets, bijoux et textiles amazighs dans l’ancienne maison de Jacques Majorelle.',
     },
     {
       _id: 'default-bamboo',
       nom: 'Jardin de Bambous',
       typeZone: 'jardin_bambou',
-      description: 'Dans le jardin des bambous, l’atmosphère devient presque mystérieuse. Les longues tiges élancées filtrent doucement la lumière et créent une promenade ombragée où le bruissement du vent accompagne chaque pas. Cet espace invite à ralentir, écouter et ressentir la quiétude d’une nature vivante et apaisante. C’est un lieu de sérénité où les visiteurs peuvent se perdre dans la beauté simple et élégante des bambous, tout en profitant d’un moment de calme au cœur du Jardin Majorelle.',
+      description: 'La forêt de bambous offre une promenade ombragée et apaisante au cœur du Jardin Majorelle.',
     },
     {
       _id: 'default-allee',
       nom: 'Allées du jardin',
       typeZone: 'allee_jardin',
-      description: 'Les allées du jardin guident les visiteurs à travers une succession de couleurs, de parfums et de paysages exotiques. Bordées de plantes rares et d’arbres majestueux, elles offrent une promenade immersive où chaque détour révèle une nouvelle perspective, un jeu d’ombre ou un détail architectural fascinant. Les allées du Jardin Majorelle sont bien plus que de simples chemins,elles sont le fil conducteur d’une expérience sensorielle et esthétique, invitant à la découverte et à l’émerveillement à chaque pas. Elles relient les différentes zones du jardin tout en offrant des points de vue uniques sur les merveilles botaniques et artistiques qui font la renommée du Jardin Majorelle.',
+      description: 'Les allées du jardin relient les espaces emblématiques et offrent de belles perspectives sur la végétation et l’architecture.',
     },
     {
       _id: 'default-cafe-majorelle',
       nom: 'Café Majorelle',
       typeZone: 'cafe_majorelle',
-      description: 'Le Café Majorelle propose une pause gourmande dans un cadre élégant et verdoyant. Entre saveurs marocaines et ambiance raffinée, ce lieu invite à prolonger l’expérience du jardin autour d’un thé à la menthe, d’un café ou d’une cuisine inspirée des traditions locales. C’est un endroit idéal pour se détendre après la visite, tout en profitant de la vue sur les plantes luxuriantes et l’architecture emblématique du Jardin Majorelle. Le Café Majorelle est un véritable havre de paix où les visiteurs peuvent savourer des moments de convivialité et de détente au cœur de ce jardin unique au monde.',
+      description: 'Le Café Majorelle propose une pause gourmande dans un cadre verdoyant et élégant.',
     },
     {
       _id: 'default-cafe-bousafsaf',
       nom: 'Café Bousafsaf',
       typeZone: 'cafe_bousafsaf',
-      description: 'Niché dans un espace paisible du jardin, le Café Bousafsaf séduit par son atmosphère intime et authentique. À l’ombre des arbres et bercé par la douceur du lieu, il offre un moment de détente idéal pour savourer la tranquillité du Jardin Majorelle. Le café propose une sélection de boissons rafraîchissantes et de douceurs inspirées des saveurs marocaines, parfaites pour accompagner une pause bien méritée après la découverte des merveilles du jardin. C’est un endroit où les visiteurs peuvent se ressourcer tout en profitant d’une ambiance chaleureuse et conviviale au cœur de ce lieu emblématique.',
+      description: 'Le Café Bousafsaf offre un moment de détente paisible à l’ombre des arbres.',
     },
     {
       _id: 'default-boutique',
       nom: 'Boutique',
       typeZone: 'boutique',
-      description: 'La boutique du jardin rassemble une sélection raffinée d’objets inspirés de l’art marocain, du design et de l’univers du Jardin Majorelle. Livres, créations artisanales, accessoires et souvenirs prolongent l’expérience du visiteur à travers des pièces élégantes et empreintes de culture. C’est un lieu de découverte où l’on peut trouver des trésors uniques pour emporter un morceau de la magie du jardin chez soi. La boutique est un véritable écrin de créativité, offrant une gamme d’articles qui célèbrent l’esthétique et l’esprit du Jardin Majorelle, tout en soutenant les artisans locaux et en perpétuant les traditions artistiques marocaines.',
+      description: 'La boutique propose des objets, livres et souvenirs inspirés par le Jardin Majorelle.',
     },
     {
       _id: 'default-librairie',
       nom: 'Librairie',
       typeZone: 'librairie',
-      description: 'La librairie est un espace dédié à l’art, à l’histoire, à la botanique et à la culture marocaine. Les visiteurs y découvrent des ouvrages soigneusement sélectionnés qui permettent d’explorer plus profondément l’univers du Jardin Majorelle, son héritage artistique et les inspirations qui ont façonné ce lieu unique. C’est un endroit idéal pour les passionnés de lecture et de culture, offrant une collection riche et variée qui complète parfaitement la visite du jardin. La librairie du Jardin Majorelle est un véritable trésor pour ceux qui souhaitent prolonger leur expérience et approfondir leurs connaissances sur ce lieu emblématique et son contexte culturel fascinant.',
+      description: 'La librairie réunit des ouvrages sur l’art, la botanique et la culture marocaine.',
     },
   ];
 
@@ -98,34 +99,137 @@ export default function GuideScreen({ navigation }) {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isSpeechPaused, setIsSpeechPaused] = useState(false);
   const [speakingMessageId, setSpeakingMessageId] = useState(null);
+  const [useElevenLabsVoice, setUseElevenLabsVoice] = useState(false);
+  const [speechVoiceId, setSpeechVoiceId] = useState(null);
   const scrollViewRef = useRef(null);
   const speechRunRef = useRef(0);
   const pauseRequestedRef = useRef(false);
+  const soundRef  = useRef(null);
+  const playerRef = useRef(null);
 
   const zoneImageMap = {
-    bassin: require('../../assets/bassin.png'),
-    jardin_bambou: require('../../assets/jardin-bambou.png'),
-    jardin_cactus: require('../../assets/jardin-cactus.png'),
-    musee_berbere: require('../../assets/musee-berbere.png'),
-    villa_bleue: require('../../assets/villa-bleue.png'),
-    boutique: require('../../assets/boutique.jpg'),
-    librairie: require('../../assets/librairie.jpg'),
-    allee_jardin: require('../../assets/allees.jpg'),
-    cafe_majorelle: require('../../assets/cafe-majorelle.jpg'),
-    cafe_bousafsaf: require('../../assets/cafe-bousafsaf.jpeg'),
+    bassin: require('../../assets/images/bassin.png'),
+    jardin_bambou: require('../../assets/images/jardin-bambou.png'),
+    jardin_cactus: require('../../assets/images/jardin-cactus.png'),
+    musee_berbere: require('../../assets/images/musee-berbere.png'),
+    villa_bleue: require('../../assets/images/villa-bleue.png'),
+    boutique: require('../../assets/images/boutique.jpg'),
+    librairie: require('../../assets/images/librairie.jpg'),
+    allee_jardin: require('../../assets/images/allees.jpg'),
+    cafe_majorelle: require('../../assets/images/cafe-majorelle.jpg'),
+    cafe_bousafsaf: require('../../assets/images/cafe-bousafsaf.jpeg'),
   };
 
+  const zoneAudioMap = {
+bassin: require('../../assets/audio/bassin.mp3'),
+jardin_bambou: require('../../assets/audio/jardin-bambou.mp3'),
+jardin_cactus: require('../../assets/audio/jardin-cactus.mp3'),
+musee_berbere: require('../../assets/audio/musee-berbere.mp3'),
+villa_bleue: require('../../assets/audio/villa-bleue.mp3'),
+boutique: require('../../assets/audio/boutique.mp3'),
+librairie: require('../../assets/audio/librairie.mp3'),
+allee_jardin: require('../../assets/audio/allees.mp3'),
+    cafe_majorelle: require('../../assets/audio/cafe-majorelle.mp3'),
+    cafe_bousafsaf: require('../../assets/audio/cafe-bousafsaf.mp3'),
+  };
+
+  const zoneVoiceTextMap = {
+    villa_bleue: 'La Villa Bleue est un symbole du Jardin Majorelle. Elle se distingue par son bleu cobalt, ses balcons et ses jardins luxuriants.',
+    jardin_cactus: 'Le jardin de cactus présente une collection de plantes grasses, d’agaves et d’aloès venues de climats arides.',
+    bassin: 'Le bassin central apporte calme et fraîcheur au jardin avec ses nénuphars et ses reflets bleus.',
+    musee_berbere: 'Le Musée Berbère présente des objets, bijoux et textiles amazighs dans l’ancienne maison de Jacques Majorelle.',
+    jardin_bambou: 'La forêt de bambous offre une promenade ombragée et apaisante au cœur du Jardin Majorelle.',
+    allee_jardin: 'Les allées du jardin relient les espaces emblématiques et offrent de belles perspectives sur la végétation et l’architecture.',
+    cafe_majorelle: 'Le Café Majorelle propose une pause gourmande dans un cadre verdoyant et élégant.',
+    cafe_bousafsaf: 'Le Café Bousafsaf offre un moment de détente paisible à l’ombre des arbres.',
+    boutique: 'La boutique propose des objets, livres et souvenirs inspirés par le Jardin Majorelle.',
+    librairie: 'La librairie réunit des ouvrages sur l’art, la botanique et la culture marocaine.',
+  };
+
+  const normalizeText = (value) =>
+    value
+      ? value
+          .toString()
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+      : '';
+
+  const normalizeZoneType = (value) =>
+    value
+      ? value
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[\s-]+/g, '_')
+    : null;
+
+const getZoneAudioSource = (zone) => {
+const key = normalizeZoneType(zone?.typeZone);
+return zoneAudioMap[key] || null;
+};
+
+
+  const playAudioSource = async (source, messageId = null) => {
+    try {
+      if (soundRef.current) {
+      await soundRef.current.unloadAsync();
+      soundRef.current = null;
+    }
+
+
+    const { sound } = await Audio.Sound.createAsync(
+      source,
+      { shouldPlay: true, progressUpdateIntervalMillis: 250 },
+      (status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          setIsSpeaking(false);
+          setIsSpeechPaused(false);
+          setSpeakingMessageId(null);
+          if (soundRef.current) {
+            soundRef.current.unloadAsync().catch(() => {});
+          }
+          soundRef.current = null;
+        }
+      }
+    );
+
+soundRef.current = sound;
+setIsSpeaking(true);
+setIsSpeechPaused(false);
+setSpeakingMessageId(messageId);
+
+} catch (error) {
+console.error('Erreur lecture audio:', error.message);
+}
+};
+
+ /* const getZoneAudioSource = (zone) => {
+    const key = zone?.typeZone ? zone.typeZone.toLowerCase() : null;
+    return zoneAudioMap[key] || null;
+  };*/
+
   const getZoneImageSource = (zone) => {
-    if (zone?.image) {
+    if (zone?.image && /^https?:\/\//i.test(zone.image)) {
       return { uri: zone.image };
     }
 
-    const key = zone?.typeZone ? zone.typeZone.toLowerCase() : null;
-    return zoneImageMap[key] || require('../../assets/villa-bleue.png');
+    const key = normalizeZoneType(zone?.typeZone);
+    return zoneImageMap[key] || require('../../assets/images/villa-bleue.png');
   };
 
+  const getZoneVoiceText = (zone) => {
+    const key = normalizeZoneType(zone?.typeZone);
+    return zoneVoiceTextMap[key] || zone?.description || 'Cette zone fait partie du Jardin Majorelle.';
+  };
+
+  const hasLocalZoneAudio = (zone) => !!getZoneAudioSource(zone);
+
   const getZoneName = (zone) => {
-    const type = zone?.typeZone?.toLowerCase();
+    const type = normalizeZoneType(zone?.typeZone);
 
     if (type === 'villa_bleue') return 'Villa Bleue';
     if (type === 'jardin_cactus') return 'jardin de cactus';
@@ -163,31 +267,28 @@ export default function GuideScreen({ navigation }) {
   };
 
   const getLocalGuideReply = (text) => {
-    const query = text.toLowerCase();
+    const query = normalizeText(text);
     const allZones = [...defaultZones, ...zones];
 
     const zoneMatch = allZones.find((zone) => {
-      const normalizedType = zone.typeZone ? zone.typeZone.replace(/_/g, ' ') : '';
-      return query.includes(zone.nom?.toLowerCase()) || query.includes(normalizedType);
+      const normalizedType = normalizeText(zone.typeZone).replace(/_/g, ' ');
+      return query.includes(normalizeText(zone.nom)) || query.includes(normalizedType);
     });
 
     if (zoneMatch) {
-      const zoneType = zoneMatch.typeZone?.toLowerCase();
-      const zoneName = getZoneName(zoneMatch);
-      const article = getZoneArticle(zoneType);
-
-      if (zoneType === 'allee_jardin') {
-        return zoneMatch.description || `Les allées du jardin relient les principales zones et offrent de belles perspectives sur les plantes et l’architecture du Jardin Majorelle.`;
-      }
-
-      if (zoneMatch.description) {
-        return zoneMatch.description;
-      }
-
-      return `${article} ${zoneName} est une zone emblématique du Jardin Majorelle.`;
+      return getZoneVoiceText(zoneMatch);
     }
 
-    if (query.includes('histoire') || query.includes('yves') || query.includes('saint laurent') || query.includes('restauration')) {
+    if (
+      query.includes('qui a cree') ||
+      query.includes('createur') ||
+      query.includes('fondateur') ||
+      query.includes('jacques majorelle') ||
+      query.includes('histoire') ||
+      query.includes('yves') ||
+      query.includes('saint laurent') ||
+      query.includes('restauration')
+    ) {
       return 'Le Jardin Majorelle a été créé par Jacques Majorelle en 1923. Yves Saint Laurent et Pierre Bergé l’ont ensuite restauré et préservé avec soin.';
     }
 
@@ -246,6 +347,34 @@ export default function GuideScreen({ navigation }) {
     };
   }, []);
 
+  useEffect(() => {
+    let mounted = true;
+
+    const loadFrenchVoice = async () => {
+      try {
+        const voices = await Speech.getAvailableVoicesAsync();
+        if (!mounted || !voices?.length) return;
+
+        const preferredVoice =
+          voices.find((voice) => normalizeText(voice.language).startsWith('fr')) ||
+          voices.find((voice) => normalizeText(voice.name).includes('french')) ||
+          voices.find((voice) => normalizeText(voice.name).includes('fr'));
+
+        if (preferredVoice?.identifier) {
+          setSpeechVoiceId(preferredVoice.identifier);
+        }
+      } catch (error) {
+        // On garde la voix système par défaut si la liste n'est pas disponible
+      }
+    };
+
+    loadFrenchVoice();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const handleSend = async (textToSend) => {
     const text = textToSend || inputText;
     if (!text.trim()) return;
@@ -261,7 +390,7 @@ export default function GuideScreen({ navigation }) {
 
     try {
       // 1. Attempt to communicate with the Backend AI Guide
-      const guideText = `Please answer only about Jardin Majorelle. ${text}`;
+      const guideText = `Réponds uniquement en français au sujet du Jardin Majorelle. ${text}`;
       console.log("Sending chat request to backend...");
       const response = await sendMessageToGuide(guideText);
       
@@ -281,9 +410,34 @@ export default function GuideScreen({ navigation }) {
       setMessages(prev => [...prev, localReply]);
       setIsTyping(false);
       setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
-      // Ajouter la synthèse vocale au fallback aussi
       playGuideAudio(fallbackText, localReply.id);
     }
+  };
+
+  const handleKnownZonePress = async (zone) => {
+    const query = getZoneQuery(zone);
+    const audioSource = getZoneAudioSource(zone);
+    const replyText = getZoneVoiceText(zone);
+
+    const userMsg = { id: Date.now().toString(), sender: 'user', text: query };
+    const botMsg = {
+      id: `${Date.now()}_zone`,
+      sender: 'bot',
+      text: replyText,
+      audioSource,
+    };
+
+    setMessages(prev => [...prev, userMsg, botMsg]);
+    setInputText('');
+    setIsTyping(false);
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
+
+    if (audioSource) {
+      await playLocalAudio(audioSource, botMsg.id);
+      return;
+    }
+
+    playGuideAudio(replyText, botMsg.id);
   };
 
   const resetSpeechState = (runId) => {
@@ -293,68 +447,115 @@ export default function GuideScreen({ navigation }) {
     setSpeakingMessageId(null);
   };
 
-  const playGuideAudio = async (text, messageId = null) => {
+  const stopCurrentAudio = async () => {
     try {
-      console.log('🔊 Début synthèse vocale');
-      
-      // Arrêter toute lecture précédente
+      if (playerRef.current) {
+        await playerRef.current.stopAsync();
+        await playerRef.current.unloadAsync();
+        playerRef.current = null;
+      }
+      if (soundRef.current) {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
+      }
+    } catch (error) {
+      // Ignorer les erreurs de libération
+    }
+    await Speech.stop();
+  };
+
+  const playLocalAudio = async (audioSource, messageId = null) => {
+    try {
       speechRunRef.current += 1;
       pauseRequestedRef.current = false;
       const runId = speechRunRef.current;
-      await Speech.stop();
-      
-      if (!text || text.trim().length === 0) {
-        console.warn('⚠️ Texte vide pour la synthèse vocale');
-        return;
-      }
+
+      await stopCurrentAudio();
 
       setIsSpeaking(true);
       setIsSpeechPaused(false);
       setSpeakingMessageId(messageId);
-      console.log('🔊 Synthèse vocale:', text.substring(0, 50) + '...');
 
-      // Utilise expo-speech pour la synthèse vocale native
-      Speech.speak(text, {
-        language: 'fr',
-        rate: 0.95,
-        pitch: 1.0,
-        volume: 1.0,
-        onStart: () => {
-          if (runId !== speechRunRef.current) return;
-          setIsSpeaking(true);
-          setIsSpeechPaused(false);
-          setSpeakingMessageId(messageId);
-        },
-        onDone: () => {
-          resetSpeechState(runId);
-          console.log('✅ Synthèse vocale terminée');
-        },
-        onStopped: () => {
-          if (runId === speechRunRef.current && pauseRequestedRef.current) return;
-          resetSpeechState(runId);
-        },
-        onError: (error) => {
-          resetSpeechState(runId);
-          console.error('❌ Erreur synthèse vocale:', error.message);
-        },
-      });
-      
+      const { sound } = await Audio.Sound.createAsync(
+        audioSource,
+        { shouldPlay: true, progressUpdateIntervalMillis: 250 },
+        (status) => {
+          if (runId !== speechRunRef.current || !status.isLoaded) return;
+          if (status.didJustFinish) {
+            resetSpeechState(runId);
+            stopCurrentAudio();
+          }
+        }
+      );
+
+      playerRef.current = sound;
     } catch (error) {
       pauseRequestedRef.current = false;
       setIsSpeaking(false);
       setIsSpeechPaused(false);
       setSpeakingMessageId(null);
-      console.error('❌ Erreur synthèse vocale:', error.message);
+      console.error('❌ Erreur lecture audio locale:', error.message);
     }
   };
 
-  const handleAudioButtonPress = async (messageId, text) => {
+  const playGuideAudio = async (text, messageId = null) => {
+    try {
+      await stopCurrentAudio();
+      speechRunRef.current += 1;
+      const runId = speechRunRef.current;
+      setIsSpeaking(true);
+      setIsSpeechPaused(false);
+      setSpeakingMessageId(messageId);
+
+      const speakLocally = () => {
+        Speech.speak(text, {
+          language: 'fr-FR',
+          rate: 0.92,
+          pitch: 0.97,
+          voice: speechVoiceId || undefined,
+          onDone: () => resetSpeechState(runId),
+          onStopped: () => resetSpeechState(runId),
+          onError: () => resetSpeechState(runId),
+        });
+      };
+
+      if (useElevenLabsVoice) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 1800);
+          const speech = await synthesizeSpeech(text, { signal: controller.signal });
+          clearTimeout(timeoutId);
+
+          const audioUri = `data:${speech.mimeType || 'audio/mpeg'};base64,${speech.audioContent}`;
+          await playAudioSource({ uri: audioUri }, messageId);
+          return;
+        } catch (premiumError) {
+          console.warn(
+            'ElevenLabs indisponible, retour automatique a la voix locale:',
+            premiumError.message
+          );
+        }
+      }
+
+      speakLocally();
+    } catch (error) {
+      console.error('Erreur lecture de secours:', error.message);
+    }
+  };
+
+  const handleAudioButtonPress = async (messageId, text, audioSource = null) => {
     const isCurrentMessage = speakingMessageId === messageId;
+    const isLocalAudio = !!audioSource;
 
     try {
       if (isCurrentMessage && isSpeechPaused) {
         pauseRequestedRef.current = false;
-        await Speech.resume();
+        if (isLocalAudio) {
+          await playerRef.current?.playAsync();
+        } else {
+          await Speech.resume();
+        }
         setIsSpeaking(true);
         setIsSpeechPaused(false);
         console.log('▶️ Reprise de la synthèse vocale');
@@ -364,13 +565,21 @@ export default function GuideScreen({ navigation }) {
       if (isCurrentMessage && isSpeaking) {
         try {
           pauseRequestedRef.current = true;
-          await Speech.pause();
+          if (isLocalAudio) {
+            await playerRef.current?.pauseAsync();
+          } else {
+            await Speech.pause();
+          }
           setIsSpeaking(false);
           setIsSpeechPaused(true);
           console.log('⏸️ Pause de la synthèse vocale');
         } catch (pauseError) {
           pauseRequestedRef.current = false;
-          await Speech.stop();
+          if (isLocalAudio) {
+            await playerRef.current?.stopAsync();
+          } else {
+            await Speech.stop();
+          }
           setIsSpeaking(false);
           setIsSpeechPaused(false);
           setSpeakingMessageId(null);
@@ -379,7 +588,11 @@ export default function GuideScreen({ navigation }) {
         return;
       }
 
-      playGuideAudio(text, messageId);
+      if (isLocalAudio) {
+        await playLocalAudio(audioSource, messageId);
+      } else {
+        playGuideAudio(text, messageId);
+      }
     } catch (error) {
       pauseRequestedRef.current = false;
       setIsSpeaking(false);
@@ -437,6 +650,23 @@ export default function GuideScreen({ navigation }) {
             </Text>
           </View>
 
+          <View style={styles.voiceModeRow}>
+            <View style={styles.voiceModeTextBlock}>
+              <Text style={styles.voiceModeLabel}>Mode voix</Text>
+              <Text style={styles.voiceModeHint}>
+                {useElevenLabsVoice ? 'Voix IA activée si le réseau répond vite' : 'Voix locale instantanée'}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.voiceModeToggle, useElevenLabsVoice && styles.voiceModeToggleActive]}
+              onPress={() => setUseElevenLabsVoice(prev => !prev)}
+            >
+              <Text style={[styles.voiceModeToggleText, useElevenLabsVoice && styles.voiceModeToggleTextActive]}>
+                {useElevenLabsVoice ? 'ElevenLabs' : 'Local'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.contextCard}>
             <Text style={styles.contextTitle}>Contexte du jardin</Text>
             <Text style={styles.contextText}>{gardenContext || 'Chargement des informations...'}</Text>
@@ -455,9 +685,14 @@ export default function GuideScreen({ navigation }) {
                 <TouchableOpacity
                   key={zone._id || zone.nom}
                   style={styles.galleryCard}
-                  onPress={() => handleSend(getZoneQuery(zone))}
+                  onPress={() => handleKnownZonePress(zone)}
                 >
                   <Image source={getZoneImageSource(zone)} style={styles.galleryImage} resizeMode="cover" />
+                  {hasLocalZoneAudio(zone) && (
+                    <View style={styles.audioBadge}>
+                      <Text style={styles.audioBadgeText}>audio local</Text>
+                    </View>
+                  )}
                   <LinearGradient colors={['transparent', 'rgba(10, 43, 94, 0.95)']} style={styles.galleryGradient}>
                     <Text style={styles.galleryCardText}>{zone.nom}</Text>
                   </LinearGradient>
@@ -499,7 +734,12 @@ export default function GuideScreen({ navigation }) {
                     <View style={styles.botIconRow}>
                       <View style={styles.botIconBg}><Bot color="#FFF" size={16} /></View>
                       <Text style={styles.botName}> Guide du Jardin Majorelle </Text>
-                      <TouchableOpacity onPress={() => handleAudioButtonPress(msg.id, msg.text)} style={{ marginLeft: 'auto' }}>
+                      {msg.audioSource && (
+                        <View style={styles.botAudioBadge}>
+                          <Text style={styles.botAudioBadgeText}>audio local</Text>
+                        </View>
+                      )}
+                      <TouchableOpacity onPress={() => handleAudioButtonPress(msg.id, msg.text, msg.audioSource)} style={{ marginLeft: 'auto' }}>
                         {getAudioIcon(msg.id)}
                       </TouchableOpacity>
                     </View>
@@ -620,6 +860,54 @@ const styles = StyleSheet.create({
     color: '#127A3A',
     fontStyle: 'italic',
   },
+  voiceModeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(10, 43, 94, 0.08)',
+  },
+  voiceModeTextBlock: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  voiceModeLabel: {
+    color: '#0A2B5E',
+    fontSize: 13,
+    fontWeight: '800',
+    marginBottom: 3,
+  },
+  voiceModeHint: {
+    color: '#68778D',
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  voiceModeToggle: {
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 999,
+    backgroundColor: '#EAE6DF',
+    borderWidth: 1,
+    borderColor: 'rgba(10, 43, 94, 0.12)',
+  },
+  voiceModeToggleActive: {
+    backgroundColor: '#0A2B5E',
+    borderColor: '#0A2B5E',
+  },
+  voiceModeToggleText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#0A2B5E',
+    letterSpacing: 0.5,
+  },
+  voiceModeToggleTextActive: {
+    color: '#FFF',
+  },
   titleHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -696,6 +984,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#B4B813',
     backgroundColor: '#F6F4EE',
+  },
+  audioBadge: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 2,
+    backgroundColor: 'rgba(10, 43, 94, 0.92)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  audioBadgeText: {
+    color: '#FFF',
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   galleryImage: {
     width: '100%',
@@ -810,6 +1114,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#127A3A',
     letterSpacing: 1,
+  },
+  botAudioBadge: {
+    marginLeft: 8,
+    backgroundColor: '#E9F4ED',
+    borderWidth: 1,
+    borderColor: '#BEE3C5',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
+  botAudioBadgeText: {
+    color: '#127A3A',
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.4,
   },
   botBubble: {
     backgroundColor: '#FFF',

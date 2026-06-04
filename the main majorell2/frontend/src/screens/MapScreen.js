@@ -34,6 +34,17 @@ export default function MapScreen({ navigation }) {
     longitude: -8.002498,
   };
 
+  const normalizeZoneType = (value) =>
+    value
+      ? value
+          .toString()
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[\s-]+/g, '_')
+      : null;
+
   const calculateDistanceKm = (from, to) => {
     const toRad = (degrees) => degrees * Math.PI / 180;
     const dLat = toRad(to.latitude - from.latitude);
@@ -126,27 +137,28 @@ export default function MapScreen({ navigation }) {
   }, [userLocation]);
 
   const getZoneDesignProps = useCallback((typeZone) => {
+    const normalizedType = normalizeZoneType(typeZone);
     const designMap = {
-      'bassin': { type: 'BASSIN', typeColor: '#B4EAA5', typeTextColor: '#127A3A', image: require('../../assets/bassin.png') },
-      'jardin_bambou': { type: 'BAMBOU', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/jardin-bambou.png') },
-      'musee_berbere': { type: 'MUSEE', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/musee-berbere.png') },
-      'villa_bleue': { type: 'VILLA', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/villa-bleue.png') },
-      'jardin_cactus': { type: 'CACTUS', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/jardin-cactus.png') },
+      'bassin': { type: 'BASSIN', typeColor: '#B4EAA5', typeTextColor: '#127A3A', image: require('../../assets/images/bassin.png') },
+      'jardin_bambou': { type: 'BAMBOU', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/images/jardin-bambou.png') },
+      'musee_berbere': { type: 'MUSEE', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/images/musee-berbere.png') },
+      'villa_bleue': { type: 'VILLA', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/images/villa-bleue.png') },
+      'jardin_cactus': { type: 'CACTUS', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/images/jardin-cactus.png') },
     };
     
-    if (['boutique', 'librairie', 'cafe_majorelle', 'cafe_bousafsaf'].includes(typeZone)) {
-      return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/boutique.jpg') };
+    if (['boutique', 'librairie', 'cafe_majorelle', 'cafe_bousafsaf'].includes(normalizedType)) {
+      return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/images/boutique.jpg') };
     }
     
-    return designMap[typeZone] || { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/villa-bleue.png') };
+    return designMap[normalizedType] || { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/images/villa-bleue.png') };
   }, []);
 
   const filteredZones = useMemo(() => {
     if (activeFilter === 'HISTORICAL') {
-      return zones.filter(z => ['villa_bleue', 'musee_berbere'].includes(z.typeZone));
+      return zones.filter(z => ['villa_bleue', 'musee_berbere'].includes(normalizeZoneType(z.typeZone)));
     }
     if (activeFilter === 'BOTANICAL') {
-      return zones.filter(z => ['bassin', 'jardin_bambou', 'jardin_cactus'].includes(z.typeZone));
+      return zones.filter(z => ['bassin', 'jardin_bambou', 'jardin_cactus'].includes(normalizeZoneType(z.typeZone)));
     }
     return zones;
   }, [zones, activeFilter]);
@@ -365,9 +377,11 @@ export default function MapScreen({ navigation }) {
           
           {selectedZone && (
             <View style={styles.bottomCard}>
-              <Image 
-                source={selectedZone.image ? { uri: selectedZone.image } : getZoneDesignProps(selectedZone.typeZone).image} 
-                style={styles.cardCover} 
+              <Image
+                source={selectedZone.image && /^https?:\/\//i.test(selectedZone.image)
+                  ? { uri: selectedZone.image }
+                  : getZoneDesignProps(selectedZone.typeZone).image}
+                style={styles.cardCover}
               />
               <View style={styles.cardContent}>
                 <Text style={styles.cardCategory}>{getZoneDesignProps(selectedZone.typeZone).type} ZONE</Text>

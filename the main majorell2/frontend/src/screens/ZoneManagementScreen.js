@@ -18,6 +18,17 @@ export default function ZoneManagementScreen({ route, navigation }) {
   // Utiliser le token transmis lors de la connexion, ou une valeur de test
   const adminToken = route?.params?.token || "votre_token_jwt_ici";
 
+  const normalizeZoneType = (value) =>
+    value
+      ? value
+          .toString()
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[\s-]+/g, '_')
+      : null;
+
   // Fetch zones on component mount
   useEffect(() => {
     fetchData();
@@ -36,21 +47,21 @@ export default function ZoneManagementScreen({ route, navigation }) {
 
   // Helper mapper to map backend enum types to our frontend design tokens
   const getZoneDesignProps = (typeZone) => {
-    switch (typeZone) {
+    switch (normalizeZoneType(typeZone)) {
       case 'bassin':
-        return { type: 'BASSIN', typeColor: '#B4EAA5', typeTextColor: '#127A3A', image: require('../../assets/bassin.png') };
+        return { type: 'BASSIN', typeColor: '#B4EAA5', typeTextColor: '#127A3A', image: require('../../assets/images/bassin.png') };
       case 'jardin_bambou':
-        return { type: 'BAMBOU', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/jardin-bambou.png') };
+        return { type: 'BAMBOU', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/images/jardin-bambou.png') };
       case 'musee_berbere':
-        return { type: 'MUSEE', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/musee-berbere.png') };
+        return { type: 'MUSEE', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/images/musee-berbere.png') };
       case 'villa_bleue':
-        return { type: 'VILLA', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/villa-bleue.png') };
+        return { type: 'VILLA', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/images/villa-bleue.png') };
       case 'jardin_cactus':
-        return { type: 'CACTUS', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/jardin-cactus.png') };
+        return { type: 'CACTUS', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/images/jardin-cactus.png') };
       case 'boutique': case 'librairie': case 'cafe_majorelle': case 'cafe_bousafsaf':
-        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/boutique.jpg') };
+        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/images/boutique.jpg') };
       default:
-        return { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/villa-bleue.png') };
+        return { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/images/villa-bleue.png') };
     }
   };
 

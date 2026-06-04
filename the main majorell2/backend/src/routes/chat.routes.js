@@ -2,11 +2,73 @@ const express = require("express");
 const router = express.Router();
 const Zone = require("../models/zone.model");
 
+const normalizeText = (value) =>
+  value
+    ? value
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+    : "";
+
+const getDeterministicGuideReply = (message) => {
+  const normalized = normalizeText(message);
+
+  if (
+    normalized.includes("qui a cree") ||
+    normalized.includes("createur") ||
+    normalized.includes("fondateur") ||
+    normalized.includes("jacques majorelle") ||
+    normalized.includes("created the jardin majorelle") ||
+    normalized.includes("who created") ||
+    normalized.includes("who founded")
+  ) {
+    return "Le Jardin Majorelle a été créé par Jacques Majorelle en 1923. Yves Saint Laurent et Pierre Bergé l’ont ensuite restauré et préservé avec soin.";
+  }
+
+  if (
+    normalized.includes("histoire") ||
+    normalized.includes("restaur") ||
+    normalized.includes("yves saint laurent") ||
+    normalized.includes("pierre berge")
+  ) {
+    return "Le Jardin Majorelle a été créé par Jacques Majorelle en 1923, puis restauré par Yves Saint Laurent et Pierre Bergé.";
+  }
+
+  if (normalized.includes("bassin") || normalized.includes("pond")) {
+    return "Le bassin central est une oasis paisible du jardin. Il accueille des nénuphars, des lotus et des plantes aquatiques qui apportent une atmosphère apaisante.";
+  }
+
+  if (normalized.includes("cactus") || normalized.includes("cacti")) {
+    return "Le jardin de cactus rassemble une collection exceptionnelle de plantes grasses, d’agaves et d’aloès. Il met en avant des espèces issues de climats arides du monde entier.";
+  }
+
+  if (normalized.includes("villa") || normalized.includes("bleu")) {
+    return "La Villa Bleue est l’un des symboles du Jardin Majorelle. Sa façade cobalt, ses balcons et ses jardins luxuriants en font un lieu très reconnaissable.";
+  }
+
+  if (normalized.includes("museum") || normalized.includes("berber")) {
+    return "Le musée berbère expose des bijoux, des costumes et des objets traditionnels marocains. Il est installé dans l’ancienne maison du peintre Jacques Majorelle.";
+  }
+
+  if (normalized.includes("bamboo") || normalized.includes("bambou")) {
+    return "La forêt de bambous forme une ambiance fraîche et ombragée. Ses tiges et ses feuilles créent un parcours très agréable dans le jardin.";
+  }
+
+  return null;
+};
+
 // AI Chatbot Route for Jardin Majorelle
 router.post("/", async (req, res) => {
   const { message } = req.body;
   if (!message) {
     return res.status(400).json({ error: "Message is required" });
+  }
+
+  const directReply = getDeterministicGuideReply(message);
+  if (directReply) {
+    return res.json({ reply: directReply });
   }
 
   const queryLower = message.toLowerCase();
@@ -19,7 +81,15 @@ router.post("/", async (req, res) => {
       return "Bienvenue au Jardin Majorelle ! Je suis votre guide virtuel. Je peux vous parler de la Villa Bleue, du jardin de cactus, du musée berbère, du bassin central ou de la forêt de bambous.";
     }
 
-    if (normalized.includes("history") || normalized.includes("yves") || normalized.includes("saint laurent") || normalized.includes("restor")) {
+    if (
+      normalized.includes("history") ||
+      normalized.includes("histoire") ||
+      normalized.includes("yves") ||
+      normalized.includes("saint laurent") ||
+      normalized.includes("restor") ||
+      normalized.includes("creat") ||
+      normalized.includes("jacques")
+    ) {
       return "Le Jardin Majorelle a été créé par Jacques Majorelle en 1923. Yves Saint Laurent et Pierre Bergé l’ont ensuite restauré et préservé avec soin.";
     }
 

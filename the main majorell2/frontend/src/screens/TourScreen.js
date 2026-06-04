@@ -16,7 +16,7 @@ export default function TourScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ImageBackground 
-        source={require('../../assets/villa-bleue.png')} 
+        source={require('../../assets/images/villa-bleue.png')} 
         style={styles.container}
       >
         <LinearGradient
@@ -47,16 +47,16 @@ export default function TourScreen({ navigation }) {
              <Text style={styles.zoneText}>EXPLORE ZONES</Text>
              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.gallery}>
                 <TouchableOpacity style={[styles.thumbBox, styles.thumbBoxActive]} onPress={() => Alert.alert('Zone Selected', 'Loading The Blue Villa 3D View')}>
-                  <ImageBackground source={require('../../assets/villa-bleue.png')} style={styles.thumbImg} />
+                  <ImageBackground source={require('../../assets/images/villa-bleue.png')} style={styles.thumbImg} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.thumbBox} onPress={() => Alert.alert('Zone Selected', 'Loading The Cactus Garden 3D View')}>
-                  <ImageBackground source={require('../../assets/jardin-cactus.png')} style={styles.thumbImg} />
+                  <ImageBackground source={require('../../assets/images/jardin-cactus.png')} style={styles.thumbImg} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.thumbBox} onPress={() => Alert.alert('Zone Selected', 'Loading The Berber Museum 3D View')}>
-                  <ImageBackground source={require('../../assets/musee-berbere.png')} style={styles.thumbImg} />
+                  <ImageBackground source={require('../../assets/images/musee-berbere.png')} style={styles.thumbImg} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.thumbBox} onPress={() => Alert.alert('Zone Selected', 'Loading The Bamboo Forest 3D View')}>
-                  <ImageBackground source={require('../../assets/jardin-bambou.png')} style={styles.thumbImg} />
+                  <ImageBackground source={require('../../assets/images/jardin-bambou.png')} style={styles.thumbImg} />
                 </TouchableOpacity>
              </ScrollView>
           </View>

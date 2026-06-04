@@ -9,6 +9,7 @@ const zoneRoutes = require("./routes/zone.routes");
 const adminRoutes = require("./routes/admin.routes");
 const uploadRoutes = require("./routes/upload.Routes");
 const chatRoutes = require("./routes/chat.routes");
+const audioRoutes = require("./routes/audio.routes");
 
 // Créer l'application
 const app = express();
@@ -25,6 +26,8 @@ app.use("/api/zones", zoneRoutes);
 app.use("/api/chat", chatRoutes);
 
 app.use("/api", uploadRoutes);
+
+app.use("/api/audio", audioRoutes);
 
 // Route principale
 app.get("/", (req, res) => {

@@ -47,7 +47,7 @@ export default function ARScreen({ navigation }) {
   }
 
   const renderContent = () => (
-    <SafeAreaView style={styles.safeArea}>
+    <>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleRetour} style={styles.backBtn}>
@@ -115,7 +115,7 @@ export default function ARScreen({ navigation }) {
         <View style={styles.bottomSection}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingHorizontal: 20}}>
             <View style={styles.arCard}>
-              <Image source={require('../../assets/jardin-cactus.png')} style={styles.arCardImage} />
+              <Image source={require('../../assets/images/jardin-cactus.png')} style={styles.arCardImage} />
               <View style={styles.arCardContent}>
                 <Text style={styles.arCardTitle}>CACTUS GARDEN</Text>
                 <Text style={styles.arCardSub}>14 Hotspots</Text>
@@ -123,7 +123,7 @@ export default function ARScreen({ navigation }) {
             </View>
 
             <View style={styles.arCard}>
-              <Image source={require('../../assets/villa-bleue.png')} style={styles.arCardImage} />
+              <Image source={require('../../assets/images/villa-bleue.png')} style={styles.arCardImage} />
               <View style={styles.arCardContent}>
                 <Text style={styles.arCardTitle}>THE BLUE VILLA</Text>
                 <Text style={styles.arCardSub}>8 Hotspots</Text>
@@ -131,7 +131,7 @@ export default function ARScreen({ navigation }) {
             </View>
 
             <View style={styles.arCard}>
-              <Image source={require('../../assets/jardin-bambou.png')} style={styles.arCardImage} />
+              <Image source={require('../../assets/images/jardin-bambou.png')} style={styles.arCardImage} />
               <View style={styles.arCardContent}>
                 <Text style={styles.arCardTitle}>BAMBOO FOREST</Text>
                 <Text style={styles.arCardSub}>4 Hotspots</Text>
@@ -147,20 +147,25 @@ export default function ARScreen({ navigation }) {
       
       {/* Spacer for MainNavigator */}
       <View style={{height: 100}} />
-    </SafeAreaView>
+    </>
   );
 
   if (isCameraActive) {
     return (
-      <CameraView style={styles.container} facing="back">
-        {renderContent()}
-      </CameraView>
+      <View style={styles.container}>
+        <CameraView style={styles.camera} facing="back" />
+        <SafeAreaView style={styles.overlay}>
+          {renderContent()}
+        </SafeAreaView>
+      </View>
     );
   }
 
   return (
     <View style={[styles.container, { backgroundColor: '#F5F4EC' }]}>
-      {renderContent()}
+      <SafeAreaView style={[styles.overlay, { backgroundColor: '#F5F4EC' }]}>
+        {renderContent()}
+      </SafeAreaView>
     </View>
   );
 }
@@ -168,6 +173,13 @@ export default function ARScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  camera: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.1)',
   },
   permissionContainer: {
     flex: 1,
@@ -191,10 +203,6 @@ const styles = StyleSheet.create({
   permissionBtnText: {
     color: '#FFF',
     fontWeight: 'bold',
-  },
-  safeArea: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.1)', // Subtle dark overlay for better text readability over camera
   },
   header: {
     flexDirection: 'row',

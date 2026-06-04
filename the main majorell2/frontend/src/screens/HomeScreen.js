@@ -29,7 +29,7 @@ export default function HomeScreen({ navigation }) {
         {/* 3D Tour Main Card */}
         <TouchableOpacity style={styles.mainCard} onPress={() => navigation.navigate('3DTour')}>
           <Image 
-            source={require('../../assets/villa-bleue.png')} 
+            source={require('../../assets/images/villa-bleue.png')} 
             style={styles.mainCardImage} 
           />
           <LinearGradient
@@ -81,7 +81,7 @@ export default function HomeScreen({ navigation }) {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
           <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('Map')}>
             <Image 
-              source={require('../../assets/jardin-cactus.png')} 
+              source={require('../../assets/images/jardin-cactus.png')} 
               style={styles.botanicalImage} 
             />
             <View style={styles.newBadge}><Text style={styles.newBadgeText}>NEW</Text></View>
@@ -91,7 +91,7 @@ export default function HomeScreen({ navigation }) {
 
           <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('Map')}>
             <Image 
-              source={require('../../assets/bassin.png')} 
+              source={require('../../assets/images/bassin.png')} 
               style={styles.botanicalImage} 
             />
             <Text style={styles.botanicalTitle}>Floating Lilies</Text>
@@ -100,7 +100,7 @@ export default function HomeScreen({ navigation }) {
 
           <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('3DTour')}>
             <Image 
-              source={require('../../assets/villa-bleue.png')} 
+              source={require('../../assets/images/villa-bleue.png')} 
               style={styles.botanicalImage} 
             />
             <Text style={styles.botanicalTitle}>Villa Bleue</Text>
@@ -109,7 +109,7 @@ export default function HomeScreen({ navigation }) {
 
           <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('3DTour')}>
             <Image 
-              source={require('../../assets/musee-berbere.png')} 
+              source={require('../../assets/images/musee-berbere.png')} 
               style={styles.botanicalImage} 
             />
             <Text style={styles.botanicalTitle}>Berber Museum</Text>
@@ -118,7 +118,7 @@ export default function HomeScreen({ navigation }) {
 
           <TouchableOpacity style={styles.botanicalCard} onPress={() => navigation.navigate('Map')}>
             <Image 
-              source={require('../../assets/jardin-bambou.png')} 
+              source={require('../../assets/images/jardin-bambou.png')} 
               style={styles.botanicalImage} 
             />
             <Text style={styles.botanicalTitle}>Bamboo Forest</Text>

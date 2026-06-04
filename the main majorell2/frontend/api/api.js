@@ -1,10 +1,10 @@
 // src/services/api.js
 import axios from 'axios';
 
-// Mise à jour de l'IP selon ton erreur Expo actuelle ou l'environnement
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.5:5000/api'; 
+// Mise Ã  jour de l'IP selon ton erreur Expo actuelle ou l'environnement
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.5:5000/api';
 
-// On crée une instance configurée
+// On crÃ©e une instance configurÃ©e
 export const apiClient = axios.create({
   baseURL: API_URL,
   timeout: 8000,
@@ -13,31 +13,31 @@ export const apiClient = axios.create({
   },
 });
 
-// --- VOS REQUÊTES ---
+// --- VOS REQUÃŠTES ---
 
-// Récupérer toutes les zones (ex: pour la carte interactive)
+// RÃ©cupÃ©rer toutes les zones (ex: pour la carte interactive)
 export const getZones = async () => {
   try {
     const response = await apiClient.get('/zones');
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de la récupération des zones:", error);
+    console.error("Erreur lors de la rÃ©cupÃ©ration des zones:", error);
     throw error;
   }
 };
 
-// Récupérer une zone spécifique (ex: quand on clique sur un point d'intérêt)
+// RÃ©cupÃ©rer une zone spÃ©cifique (ex: quand on clique sur un point d'intÃ©rÃªt)
 export const getZoneById = async (id) => {
   try {
     const response = await apiClient.get(`/zones/${id}`);
     return response.data;
   } catch (error) {
-    console.error(`Erreur lors de la récupération de la zone ${id}:`, error);
+    console.error(`Erreur lors de la recuperation de la zone ${id}:`, error);
     throw error;
   }
 };
 
-// Créer une nouvelle zone (Nécessite un token admin)
+// CrÃ©er une nouvelle zone (NÃ©cessite un token admin)
 export const createZone = async (zoneData, token) => {
   try {
     const response = await apiClient.post('/zones', zoneData, {
@@ -45,12 +45,12 @@ export const createZone = async (zoneData, token) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de la création de la zone:", error);
+    console.error("Erreur lors de la crÃ©ation de la zone:", error);
     throw error;
   }
 };
 
-// Modifier une zone (Nécessite un token admin)
+// Modifier une zone (NÃ©cessite un token admin)
 export const updateZone = async (id, zoneData, token) => {
   try {
     const response = await apiClient.put(`/zones/${id}`, zoneData, {
@@ -63,7 +63,7 @@ export const updateZone = async (id, zoneData, token) => {
   }
 };
 
-// Supprimer une zone (Nécessite un token admin)
+// Supprimer une zone (NÃ©cessite un token admin)
 export const deleteZone = async (id, token) => {
   try {
     const response = await apiClient.delete(`/zones/${id}`, {
@@ -104,7 +104,7 @@ export const uploadImage = async (imageUri, token) => {
     const formData = new FormData();
     const fileName = imageUri.split('/').pop();
     const fileType = imageUri.substring(imageUri.lastIndexOf(".") + 1);
-    
+
     formData.append('image', {
       uri: imageUri,
       name: fileName,
@@ -117,7 +117,7 @@ export const uploadImage = async (imageUri, token) => {
         Authorization: `Bearer ${token}`
       }
     });
-    
+
     return response.data.imageUrl;
   } catch (error) {
     console.error("Erreur lors de l'upload de l'image:", error);
@@ -131,7 +131,7 @@ export const uploadZoneImage = async (zoneId, imageUri, token) => {
     const formData = new FormData();
     const fileName = imageUri.split('/').pop();
     const fileType = imageUri.substring(imageUri.lastIndexOf(".") + 1);
-    
+
     formData.append('image', {
       uri: imageUri,
       name: fileName,
@@ -144,10 +144,23 @@ export const uploadZoneImage = async (zoneId, imageUri, token) => {
         Authorization: `Bearer ${token}`
       }
     });
-    
+
     return response.data.zone;
   } catch (error) {
     console.error("Erreur lors de l'upload de l'image de zone:", error);
+    throw error;
+  }
+};
+
+export const synthesizeSpeech = async (text) => {
+  try {
+    const response = await apiClient.post('/audio', { text });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Erreur synthÃ¨se vocale :",
+      error.message
+    );
     throw error;
   }
 };
