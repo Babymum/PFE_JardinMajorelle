@@ -37,61 +37,61 @@ export default function GuideScreen({ navigation }) {
       _id: 'default-villa',
       nom: 'Villa Bleue',
       typeZone: 'villa_bleue',
-      description: 'La Villa Bleue est un symbole du Jardin Majorelle. Elle se distingue par son bleu cobalt, ses balcons et ses jardins luxuriants.',
+      description: "Véritable symbole du Jardin Majorelle, la Villa Bleue attire le regard par son architecture unique et son célèbre bleu intense devenu emblématique dans le monde entier. Inspirée des influences marocaines et artistiques, elle incarne la rencontre entre créativité, élégance et patrimoine culturel. Chaque détail de la villa célèbre l’imaginaire de Jacques Majorelle et son amour pour Marrakech. La façade cobalt, les balcons ornés et les jardins luxuriants qui l’entourent créent une atmosphère magique et intemporelle. La Villa Bleue est un lieu de contemplation et d’émerveillement, invitant les visiteurs à plonger dans l’univers artistique du jardin tout en découvrant l’histoire fascinante de ce lieu unique au monde.",
     },
     {
       _id: 'default-cactus',
       nom: 'Jardins de Cactus',
       typeZone: 'jardin_cactus',
-      description: 'Le jardin de cactus présente une collection de plantes grasses, d’agaves et d’aloès venues de climats arides.',
+      description: "Le jardin des cactus dévoile une collection fascinante de plantes venues des régions arides du monde entier. Entre formes sculpturales, textures étonnantes et silhouettes majestueuses, chaque cactus raconte l’ingéniosité de la nature face au désert. Cet espace offre un contraste saisissant entre la force minérale des plantes et la douceur artistique du jardin. C’est un lieu de découverte et d’émerveillement où les visiteurs peuvent admirer des espèces rares et exotiques, tout en ressentant la magie du Jardin Majorelle à travers la diversité botanique et l’atmosphère unique qui règne dans ce coin du jardin.",
     },
     {
       _id: 'default-lilies',
       nom: 'Bassin central',
       typeZone: 'bassin',
-      description: 'Le bassin central apporte calme et fraîcheur au jardin avec ses nénuphars et ses reflets bleus.',
+      description: "Au cœur du jardin, le bassin apporte une sensation immédiate de calme et de fraîcheur. Ses eaux paisibles reflètent les nuances éclatantes du bleu Majorelle, les silhouettes des palmiers et la végétation luxuriante qui l’entoure. Le murmure délicat de l’eau accompagne les visiteurs dans une parenthèse de sérénité où nature et poésie semblent dialoguer en harmonie. Le bassin central est un véritable havre de paix au sein du Jardin Majorelle, invitant à la contemplation et à la rêverie. Il accueille des nénuphars, des lotus et d’autres plantes aquatiques qui ajoutent une touche de mystère et de beauté à ce lieu emblématique du jardin.",
     },
     {
       _id: 'default-museum',
-      nom: 'Musée Berbère',
+      nom: 'Musee Berbere',
       typeZone: 'musee_berbere',
-      description: 'Le Musée Berbère présente des objets, bijoux et textiles amazighs dans l’ancienne maison de Jacques Majorelle.',
+      description: "Le Musée Berbère invite les visiteurs à découvrir la richesse et la diversité de la culture amazighe à travers une collection exceptionnelle d’objets traditionnels, bijoux, textiles et œuvres artisanales. Plus qu’un musée, c’est un voyage au cœur de l’histoire, des savoir-faire et des traditions ancestrales du Maroc. Installé dans l’ancienne maison du peintre Jacques Majorelle, le musée offre un cadre intime et authentique pour explorer les trésors de l’art berbère. Chaque pièce exposée raconte une histoire, témoignant de la créativité et de l’identité d’un peuple fier de son héritage. Le Musée Berbère est un lieu de découverte culturelle incontournable au sein du Jardin Majorelle, permettant aux visiteurs de mieux comprendre les racines et les influences qui ont façonné ce jardin unique au monde.",
     },
     {
       _id: 'default-bamboo',
       nom: 'Jardin de Bambous',
       typeZone: 'jardin_bambou',
-      description: 'La forêt de bambous offre une promenade ombragée et apaisante au cœur du Jardin Majorelle.',
+      description: "Dans le jardin des bambous, l’atmosphère devient presque mystérieuse. Les longues tiges élancées filtrent doucement la lumière et créent une promenade ombragée où le bruissement du vent accompagne chaque pas. Cet espace invite à ralentir, écouter et ressentir la quiétude d’une nature vivante et apaisante. C’est un lieu de sérénité où les visiteurs peuvent se perdre dans la beauté simple et élégante des bambous, tout en profitant d’un moment de calme au cœur du Jardin Majorelle.",
     },
     {
       _id: 'default-allee',
-      nom: 'Allées du jardin',
+      nom: 'Allees du jardin',
       typeZone: 'allee_jardin',
-      description: 'Les allées du jardin relient les espaces emblématiques et offrent de belles perspectives sur la végétation et l’architecture.',
+      description: "Les allées du jardin guident les visiteurs à travers une succession de couleurs, de parfums et de paysages exotiques. Bordées de plantes rares et d’arbres majestueux, elles offrent une promenade immersive où chaque détour révèle une nouvelle perspective, un jeu d’ombre ou un détail architectural fascinant. Les allées du Jardin Majorelle sont bien plus que de simples chemins, elles sont le fil conducteur d’une expérience sensorielle et esthétique, invitant à la découverte et à l’émerveillement à chaque pas. Elles relient les différentes zones du jardin tout en offrant des points de vue uniques sur les merveilles botaniques et artistiques qui font la renommée du Jardin Majorelle.",
     },
     {
       _id: 'default-cafe-majorelle',
-      nom: 'Café Majorelle',
+      nom: 'Cafe Majorelle',
       typeZone: 'cafe_majorelle',
-      description: 'Le Café Majorelle propose une pause gourmande dans un cadre verdoyant et élégant.',
+      description: "Le Café Majorelle propose une pause gourmande dans un cadre élégant et verdoyant. Entre saveurs marocaines et ambiance raffinée, ce lieu invite à prolonger l’expérience du jardin autour d’un thé à la menthe, d’un café ou d’une cuisine inspirée des traditions locales. C’est un endroit idéal pour se détendre après la visite, tout en profitant de la vue sur les plantes luxuriantes et l’architecture emblématique du Jardin Majorelle. Le Café Majorelle est un véritable havre de paix où les visiteurs peuvent savourer des moments de convivialité et de détente au cœur de ce jardin unique au monde.",
     },
     {
       _id: 'default-cafe-bousafsaf',
-      nom: 'Café Bousafsaf',
+      nom: 'Cafe Bousafsaf',
       typeZone: 'cafe_bousafsaf',
-      description: 'Le Café Bousafsaf offre un moment de détente paisible à l’ombre des arbres.',
+      description: "Niché dans un espace paisible du jardin, le Café Bousafsaf séduit par son atmosphère intime et authentique. À l’ombre des arbres et bercé par la douceur du lieu, il offre un moment de détente idéal pour savourer la tranquillité du Jardin Majorelle. Le café propose une sélection de boissons rafraîchissantes et de douceurs inspirées des saveurs marocaines, parfaites pour accompagner une pause bien méritée après la découverte des merveilles du jardin. C’est un endroit où les visiteurs peuvent se ressourcer tout en profitant d’une ambiance chaleureuse et conviviale au cœur de ce lieu emblématique.",
     },
     {
       _id: 'default-boutique',
       nom: 'Boutique',
       typeZone: 'boutique',
-      description: 'La boutique propose des objets, livres et souvenirs inspirés par le Jardin Majorelle.',
+      description: "La boutique du jardin rassemble une sélection raffinée d’objets inspirés de l’art marocain, du design et de l’univers du Jardin Majorelle. Livres, créations artisanales, accessoires et souvenirs prolongent l’expérience du visiteur à travers des pièces élégantes et empreintes de culture. C’est un lieu de découverte où l’on peut trouver des trésors uniques pour emporter un morceau de la magie du jardin chez soi. La boutique est un véritable écrin de créativité, offrant une gamme d’articles qui célèbrent l’esthétique et l’esprit du Jardin Majorelle, tout en soutenant les artisans locaux et en perpétuant les traditions artistiques marocaines.",
     },
     {
       _id: 'default-librairie',
       nom: 'Librairie',
       typeZone: 'librairie',
-      description: 'La librairie réunit des ouvrages sur l’art, la botanique et la culture marocaine.',
+      description: "La librairie est un espace dédié à l’art, à l’histoire, à la botanique et à la culture marocaine. Les visiteurs y découvrent des ouvrages soigneusement sélectionnés qui permettent d’explorer plus profondément l’univers du Jardin Majorelle, son héritage artistique et les inspirations qui ont façonné ce lieu unique. C’est un endroit idéal pour les passionnés de lecture et de culture, offrant une collection riche et variée qui complète parfaitement la visite du jardin. La librairie du Jardin Majorelle est un véritable trésor pour ceux qui souhaitent prolonger leur expérience et approfondir leurs connaissances sur ce lieu emblématique et son contexte culturel fascinant.",
     },
   ];
 
@@ -158,6 +158,154 @@ export default function GuideScreen({ navigation }) {
         .replace(/[\s-]+/g, '_')
     : null;
 
+  const zoneGuideContent = {
+    fr: {
+      villa_bleue: {
+        name: 'Villa Bleue',
+        description: "Véritable symbole du Jardin Majorelle, la Villa Bleue attire le regard par son architecture unique et son célèbre bleu intense devenu emblématique dans le monde entier. Inspirée des influences marocaines et artistiques, elle incarne la rencontre entre créativité, élégance et patrimoine culturel. Chaque détail de la villa célèbre l’imaginaire de Jacques Majorelle et son amour pour Marrakech. La façade cobalt, les balcons ornés et les jardins luxuriants qui l’entourent créent une atmosphère magique et intemporelle. La Villa Bleue est un lieu de contemplation et d’émerveillement, invitant les visiteurs à plonger dans l’univers artistique du jardin tout en découvrant l’histoire fascinante de ce lieu unique au monde.",
+      },
+      jardin_cactus: {
+        name: 'Jardins de Cactus',
+        description: "Le jardin des cactus dévoile une collection fascinante de plantes venues des régions arides du monde entier. Entre formes sculpturales, textures étonnantes et silhouettes majestueuses, chaque cactus raconte l’ingéniosité de la nature face au désert. Cet espace offre un contraste saisissant entre la force minérale des plantes et la douceur artistique du jardin. C’est un lieu de découverte et d’émerveillement où les visiteurs peuvent admirer des espèces rares et exotiques, tout en ressentant la magie du Jardin Majorelle à travers la diversité botanique et l’atmosphère unique qui règne dans ce coin du jardin.",
+      },
+      bassin: {
+        name: 'Bassin central',
+        description: "Au cœur du jardin, le bassin apporte une sensation immédiate de calme et de fraîcheur. Ses eaux paisibles reflètent les nuances éclatantes du bleu Majorelle, les silhouettes des palmiers et la végétation luxuriante qui l’entoure. Le murmure délicat de l’eau accompagne les visiteurs dans une parenthèse de sérénité où nature et poésie semblent dialoguer en harmonie. Le bassin central est un véritable havre de paix au sein du Jardin Majorelle, invitant à la contemplation et à la rêverie. Il accueille des nénuphars, des lotus et d’autres plantes aquatiques qui ajoutent une touche de mystère et de beauté à ce lieu emblématique du jardin.",
+      },
+      musee_berbere: {
+        name: 'Musée Berbère',
+        description: "Le Musée Berbère invite les visiteurs à découvrir la richesse et la diversité de la culture amazighe à travers une collection exceptionnelle d’objets traditionnels, bijoux, textiles et œuvres artisanales. Plus qu’un musée, c’est un voyage au cœur de l’histoire, des savoir-faire et des traditions ancestrales du Maroc. Installé dans l’ancienne maison du peintre Jacques Majorelle, le musée offre un cadre intime et authentique pour explorer les trésors de l’art berbère. Chaque pièce exposée raconte une histoire, témoignant de la créativité et de l’identité d’un peuple fier de son héritage. Le Musée Berbère est un lieu de découverte culturelle incontournable au sein du Jardin Majorelle, permettant aux visiteurs de mieux comprendre les racines et les influences qui ont façonné ce jardin unique au monde.",
+      },
+      jardin_bambou: {
+        name: 'Jardin de Bambous',
+        description: "Dans le jardin des bambous, l’atmosphère devient presque mystérieuse. Les longues tiges élancées filtrent doucement la lumière et créent une promenade ombragée où le bruissement du vent accompagne chaque pas. Cet espace invite à ralentir, écouter et ressentir la quiétude d’une nature vivante et apaisante. C’est un lieu de sérénité où les visiteurs peuvent se perdre dans la beauté simple et élégante des bambous, tout en profitant d’un moment de calme au cœur du Jardin Majorelle.",
+      },
+      allee_jardin: {
+        name: 'Allées du jardin',
+        description: "Les allées du jardin guident les visiteurs à travers une succession de couleurs, de parfums et de paysages exotiques. Bordées de plantes rares et d’arbres majestueux, elles offrent une promenade immersive où chaque détour révèle une nouvelle perspective, un jeu d’ombre ou un détail architectural fascinant. Les allées du Jardin Majorelle sont bien plus que de simples chemins, elles sont le fil conducteur d’une expérience sensorielle et esthétique, invitant à la découverte et à l’émerveillement à chaque pas. Elles relient les différentes zones du jardin tout en offrant des points de vue uniques sur les merveilles botaniques et artistiques qui font la renommée du Jardin Majorelle.",
+      },
+      cafe_majorelle: {
+        name: 'Café Majorelle',
+        description: "Le Café Majorelle propose une pause gourmande dans un cadre élégant et verdoyant. Entre saveurs marocaines et ambiance raffinée, ce lieu invite à prolonger l’expérience du jardin autour d’un thé à la menthe, d’un café ou d’une cuisine inspirée des traditions locales. C’est un endroit idéal pour se détendre après la visite, tout en profitant de la vue sur les plantes luxuriantes et l’architecture emblématique du Jardin Majorelle. Le Café Majorelle est un véritable havre de paix où les visiteurs peuvent savourer des moments de convivialité et de détente au cœur de ce jardin unique au monde.",
+      },
+      cafe_bousafsaf: {
+        name: 'Café Bousafsaf',
+        description: "Niché dans un espace paisible du jardin, le Café Bousafsaf séduit par son atmosphère intime et authentique. À l’ombre des arbres et bercé par la douceur du lieu, il offre un moment de détente idéal pour savourer la tranquillité du Jardin Majorelle. Le café propose une sélection de boissons rafraîchissantes et de douceurs inspirées des saveurs marocaines, parfaites pour accompagner une pause bien méritée après la découverte des merveilles du jardin. C’est un endroit où les visiteurs peuvent se ressourcer tout en profitant d’une ambiance chaleureuse et conviviale au cœur de ce lieu emblématique.",
+      },
+      boutique: {
+        name: 'Boutique',
+        description: "La boutique du jardin rassemble une sélection raffinée d’objets inspirés de l’art marocain, du design et de l’univers du Jardin Majorelle. Livres, créations artisanales, accessoires et souvenirs prolongent l’expérience du visiteur à travers des pièces élégantes et empreintes de culture. C’est un lieu de découverte où l’on peut trouver des trésors uniques pour emporter un morceau de la magie du jardin chez soi. La boutique est un véritable écrin de créativité, offrant une gamme d’articles qui célèbrent l’esthétique et l’esprit du Jardin Majorelle, tout en soutenant les artisans locaux et en perpétuant les traditions artistiques marocaines.",
+      },
+      librairie: {
+        name: 'Librairie',
+        description: "La librairie est un espace dédié à l’art, à l’histoire, à la botanique et à la culture marocaine. Les visiteurs y découvrent des ouvrages soigneusement sélectionnés qui permettent d’explorer plus profondément l’univers du Jardin Majorelle, son héritage artistique et les inspirations qui ont façonné ce lieu unique. C’est un endroit idéal pour les passionnés de lecture et de culture, offrant une collection riche et variée qui complète parfaitement la visite du jardin. La librairie du Jardin Majorelle est un véritable trésor pour ceux qui souhaitent prolonger leur expérience et approfondir leurs connaissances sur ce lieu emblématique et son contexte culturel fascinant.",
+      },
+    },
+    en: {
+      villa_bleue: {
+        name: 'Blue Villa',
+        description: "The Blue Villa is one of the most striking symbols of the Jardin Majorelle. Its vivid cobalt facade, elegant balconies, and lush surroundings create a landmark that immediately captures attention. Inspired by Moroccan craftsmanship and artistic vision, it reflects a meeting point between creativity, refinement, and cultural heritage. Every architectural detail speaks to Jacques Majorelle's imagination and his affection for Marrakech. It is a place of wonder and contemplation, inviting visitors to step into the artistic world of the garden and discover the history behind this unforgettable site.",
+      },
+      jardin_cactus: {
+        name: 'Cactus Garden',
+        description: "The Cactus Garden reveals a fascinating collection of plants from arid regions around the world. Sculptural forms, surprising textures, and majestic silhouettes make each cactus feel like a work of living art. The space creates a striking contrast between the raw strength of desert plants and the artistic softness of the garden's design. It is a place of discovery and wonder where visitors can admire rare and exotic species while experiencing the unique botanical atmosphere that defines the Jardin Majorelle.",
+      },
+      bassin: {
+        name: 'Central Pond',
+        description: "At the heart of the garden, the pond brings an immediate sense of calm and freshness. Its still waters reflect the brilliant shades of Majorelle blue, the silhouettes of palm trees, and the lush vegetation around it. The gentle sound of water accompanies visitors through a moment of serenity where nature and poetry seem to speak together in harmony. The central pond is a true haven of peace inside the Jardin Majorelle, inviting contemplation and quiet reflection. Water lilies, lotus flowers, and other aquatic plants add mystery and beauty to this emblematic space.",
+      },
+      musee_berbere: {
+        name: 'Berber Museum',
+        description: "The Berber Museum invites visitors to discover the richness and diversity of Amazigh culture through an exceptional collection of traditional objects, jewelry, textiles, and handcrafted works. More than a museum, it is a journey into the history, craftsmanship, and ancestral traditions of Morocco. Located in the former home of painter Jacques Majorelle, the museum offers an intimate and authentic setting to explore the treasures of Berber art. Each displayed piece tells a story, reflecting the creativity and identity of a people proud of their heritage. It is an essential cultural stop within the Jardin Majorelle, helping visitors understand the roots and influences that shaped this unique garden.",
+      },
+      jardin_bambou: {
+        name: 'Bamboo Garden',
+        description: "In the Bamboo Garden, the atmosphere becomes almost mysterious. Tall, slender stems filter the light softly and create a shaded walk where the rustle of the wind accompanies every step. This space invites visitors to slow down, listen, and feel the quiet presence of a living, soothing nature. It is a place of serenity where you can lose yourself in the simple elegance of bamboo while enjoying a peaceful moment at the heart of the Jardin Majorelle.",
+      },
+      allee_jardin: {
+        name: 'Garden Pathways',
+        description: "The garden pathways guide visitors through a succession of colors, scents, and exotic landscapes. Lined with rare plants and majestic trees, they offer an immersive walk where every turn reveals a new perspective, a play of shadow, or a fascinating architectural detail. More than simple routes, the paths of the Jardin Majorelle act as the thread that connects the sensory and aesthetic experience of the garden, inviting discovery and wonder at every step. They link the different zones while offering unique views of the botanical and artistic treasures that make the garden famous.",
+      },
+      cafe_majorelle: {
+        name: 'Café Majorelle',
+        description: "Café Majorelle offers a delicious pause in an elegant and green setting. Blending Moroccan flavors with refined ambiance, it invites visitors to extend their garden experience over mint tea, coffee, or dishes inspired by local traditions. It is the ideal place to relax after the visit while enjoying the lush plants and iconic architecture of the Jardin Majorelle. Café Majorelle is a true haven of peace where visitors can enjoy moments of comfort and conviviality in this unique garden.",
+      },
+      cafe_bousafsaf: {
+        name: 'Café Bousafsaf',
+        description: "Tucked away in a peaceful part of the garden, Café Bousafsaf charms with its intimate and authentic atmosphere. Beneath the trees and surrounded by the calm of the place, it offers the perfect moment to relax and enjoy the tranquility of the Jardin Majorelle. The café serves refreshing drinks and Moroccan-inspired treats, ideal for a well-deserved break after exploring the garden's highlights. It is a warm and welcoming place where visitors can recharge in the heart of this emblematic site.",
+      },
+      boutique: {
+        name: 'Boutique',
+        description: "The garden boutique brings together a refined selection of objects inspired by Moroccan art, design, and the world of the Jardin Majorelle. Books, handcrafted creations, accessories, and souvenirs extend the visitor experience through elegant, culturally rich pieces. It is a place of discovery where unique treasures can be found to bring a piece of the garden's magic home. The boutique is a true showcase of creativity, celebrating the aesthetic and spirit of the Jardin Majorelle while supporting local artisans and preserving Moroccan artistic traditions.",
+      },
+      librairie: {
+        name: 'Bookstore',
+        description: "The bookstore is a space dedicated to art, history, botany, and Moroccan culture. Visitors discover carefully selected works that allow them to explore the world of the Jardin Majorelle more deeply, along with its artistic legacy and the inspirations that shaped this unique place. It is an ideal stop for readers and culture lovers, offering a rich and varied collection that perfectly complements the garden visit. The Jardin Majorelle bookstore is a true treasure for those who want to extend their experience and deepen their understanding of this iconic place and its fascinating cultural context.",
+      },
+    },
+    ar: {
+      villa_bleue: {
+        name: 'الفيلا الزرقاء',
+        description: 'تُعد الفيلا الزرقاء أحد أبرز رموز حديقة ماجوريل، فواجهتها الزرقاء الكوبالتية الجريئة وشرفاتها الأنيقة وحدائقها المحيطة تمنح المكان حضورًا لا يُنسى. تستلهم هذه المعلمة من الحرفية المغربية والرؤية الفنية، لتجسد لقاءً بين الإبداع والرقي والتراث الثقافي. كل تفصيل فيها يعكس خيال جاك ماجوريل وحبه لمراكش. إنها مساحة للتأمل والانبهار، تدعو الزوار إلى دخول العالم الفني للحديقة واكتشاف تاريخ هذا المكان الاستثنائي.',
+      },
+      jardin_cactus: {
+        name: 'حديقة الصبار',
+        description: 'تكشف حديقة الصبار عن مجموعة مدهشة من النباتات القادمة من المناطق الجافة حول العالم. فالأشكال النحتية والملمس المفاجئ والظلال المهيبة تجعل كل صبار يبدو كقطعة فنية حية. يخلق هذا الفضاء تباينًا جميلًا بين قوة نباتات الصحراء الخام ونعومة التصميم الفني للحديقة. إنها مساحة اكتشاف وإعجاب، حيث يمكن للزوار التأمل في أنواع نادرة وغريبة مع الإحساس بالجو النباتي الفريد الذي يميز حديقة ماجوريل.',
+      },
+      bassin: {
+        name: 'الحوض المركزي',
+        description: 'في قلب الحديقة يمنح الحوض إحساسًا فوريًا بالهدوء والانتعاش. تعكس مياهه الهادئة درجات الأزرق الماجوريل الزاهية، وظلال النخيل، والنباتات الكثيفة المحيطة به. يرافق خرير الماء الزائرين في لحظة من السكينة حيث يبدو أن الطبيعة والشعر يتحاوران بتناغم. يُعد الحوض المركزي ملاذًا حقيقيًا للطمأنينة داخل حديقة ماجوريل، ويدعو إلى التأمل والهدوء. كما تحتضنه زنابق الماء ونباتات مائية أخرى تضيف لمسة من الغموض والجمال إلى هذا المكان الرمزي.',
+      },
+      musee_berbere: {
+        name: 'المتحف الأمازيغي',
+        description: 'يدعو المتحف الأمازيغي الزوار إلى اكتشاف ثراء وتنوع الثقافة الأمازيغية عبر مجموعة استثنائية من القطع التقليدية والمجوهرات والمنسوجات والأعمال الحرفية. وهو أكثر من مجرد متحف، بل رحلة إلى عمق تاريخ المغرب وحِرفه وتقاليده العريقة. يقع في المنزل السابق للفنان جاك ماجوريل، ويقدم فضاءً حميمًا وأصيلًا لاستكشاف كنوز الفن الأمازيغي. كل قطعة معروضة تروي قصة، وتعكس الإبداع والهوية لدى شعب يعتز بإرثه. إنه محطة ثقافية أساسية داخل حديقة ماجوريل تساعد الزوار على فهم الجذور والتأثيرات التي شكّلت هذه الحديقة الفريدة.',
+      },
+      jardin_bambou: {
+        name: 'حديقة الخيزران',
+        description: 'في حديقة الخيزران يصبح الجو شبه غامض. فالأعمدة الطويلة الرفيعة ترشح الضوء بلطف وتخلق ممشى مظللًا ترافقه همسات الرياح مع كل خطوة. هذه المساحة تدعو الزائر إلى التمهل، والاستماع، والشعور بسكينة الطبيعة الحية والمريحة. إنها مكان للهدوء يمكن فيه للزوار أن يذوبوا في جمال الخيزران البسيط والأنيق مع الاستمتاع بلحظة هدوء في قلب حديقة ماجوريل.',
+      },
+      allee_jardin: {
+        name: 'ممرات الحديقة',
+        description: 'تقود ممرات الحديقة الزوار عبر تتابع من الألوان والروائح والمناظر الغريبة. وتحيط بها النباتات النادرة والأشجار المهيبة، فتمنحهم جولة غامرة يكشف فيها كل منعطف منظورًا جديدًا أو لعبة ظل أو تفصيلة معمارية آسرة. إن ممرات حديقة ماجوريل أكثر من مجرد طرق، فهي الخيط الذي يربط التجربة الحسية والجمالية للحديقة، وتدعو إلى الاكتشاف والدهشة في كل خطوة. كما تصل بين المناطق المختلفة وتتيح إطلالات فريدة على الكنوز النباتية والفنية التي جعلت الحديقة مشهورة.',
+      },
+      cafe_majorelle: {
+        name: 'مقهى ماجوريل',
+        description: 'يقدم مقهى ماجوريل استراحة لذيذة في أجواء أنيقة وخضراء. إذ يجمع بين النكهات المغربية والأجواء الراقية، ويدعو الزوار إلى إطالة تجربة الحديقة مع شاي النعناع أو القهوة أو أطباق مستوحاة من التقاليد المحلية. إنه المكان المثالي للاسترخاء بعد الجولة مع الاستمتاع بالنباتات الكثيفة والهندسة المعمارية الأيقونية لحُديقة ماجوريل. ويُعد المقهى ملاذًا حقيقيًا للراحة حيث يمكن للزوار قضاء لحظات من الألفة والهدوء داخل هذه الحديقة الفريدة.',
+      },
+      cafe_bousafsaf: {
+        name: 'مقهى بوصفصاف',
+        description: 'يقع مقهى بوصفصاف في جزء هادئ من الحديقة ويتميز بأجوائه الحميمة والأصيلة. وتحت ظلال الأشجار وبحضور سكينة المكان، يوفر لحظة مثالية للاسترخاء والاستمتاع بهدوء حديقة ماجوريل. يقدم المقهى مشروبات منعشة وحلويات مستوحاة من النكهات المغربية، وهي مناسبة تمامًا لاستراحة مستحقة بعد اكتشاف معالم الحديقة. إنه مكان دافئ ومرحب يتيح للزوار استعادة نشاطهم في قلب هذا الموقع الرمزي.',
+      },
+      boutique: {
+        name: 'المتجر',
+        description: 'يجمع متجر الحديقة مجموعة راقية من القطع المستوحاة من الفن المغربي والتصميم وعالم حديقة ماجوريل. فهناك الكتب والإبداعات الحرفية والإكسسوارات والتذكارات التي تُكمل تجربة الزائر من خلال قطع أنيقة ومفعمة بالثقافة. إنه مكان للاكتشاف يمكن فيه العثور على كنوز فريدة تأخذ معك شيئًا من سحر الحديقة إلى البيت. ويعد المتجر واجهة حقيقية للإبداع تحتفي بجمال وروح حديقة ماجوريل، مع دعم الحرفيين المحليين والحفاظ على التقاليد الفنية المغربية.',
+      },
+      librairie: {
+        name: 'المكتبة',
+        description: 'المكتبة فضاء مخصص للفن والتاريخ وعلم النبات والثقافة المغربية. يكتشف الزوار فيها كتبًا مختارة بعناية تتيح لهم استكشاف عالم حديقة ماجوريل بعمق أكبر، إلى جانب إرثها الفني والإلهامات التي شكّلت هذا المكان الفريد. إنها محطة مثالية لعشاق القراءة والثقافة، وتقدم مجموعة غنية ومتنوعة تكمل زيارة الحديقة بشكل ممتاز. تُعد مكتبة حديقة ماجوريل كنزًا حقيقيًا لمن يرغب في مواصلة التجربة وتعميق معرفته بهذا المكان الرمزي وسياقه الثقافي المدهش.',
+      },
+    },
+  };
+
+  const getZoneGuideContent = (zone) => {
+    const normalizedType = normalizeZoneType(zone?.typeZone);
+    const lang = i18n.language?.startsWith('ar')
+      ? 'ar'
+      : i18n.language?.startsWith('en')
+        ? 'en'
+        : 'fr';
+    const localized = zoneGuideContent[lang]?.[normalizedType] || zoneGuideContent.fr?.[normalizedType];
+
+    return {
+      name: localized?.name || zone?.nom || 'this area',
+      description: localized?.description || zone?.description || 'This area is part of the Jardin Majorelle.',
+    };
+  };
+
+  const getDefaultZoneDescription = (zone) => {
+    return getZoneGuideContent(zone).description;
+  };
+
   const getZoneAudioSource = (zone) => {
     const key = normalizeZoneType(zone?.typeZone);
     return zoneAudioMap[key] || null;
@@ -213,7 +361,7 @@ export default function GuideScreen({ navigation }) {
   };
 
   const getZoneImageSource = (zone) => {
-    if (zone?.image && /^https?:\/\//i.test(zone.image)) {
+    if (zone?.image && /^https?:\/\//i.test(zone.image) && !zone.image.includes('unsplash.com')) {
       return { uri: zone.image };
     }
     const design = getZoneDesignProps(zone?.typeZone);
@@ -221,13 +369,13 @@ export default function GuideScreen({ navigation }) {
   };
 
   const getZoneVoiceText = (zone) => {
-    return t('zone_desc_' + zone?.typeZone, zone?.description || 'Cette zone fait partie du Jardin Majorelle.');
+    return getDefaultZoneDescription(zone);
   };
 
   const hasLocalZoneAudio = (zone) => !!getZoneAudioSource(zone);
 
   const getZoneName = (zone) => {
-    return t('zone_name_' + zone?.typeZone, zone?.nom || 'cette zone');
+    return getZoneGuideContent(zone).name;
   };
 
   const getZoneQuery = (zone) => {
@@ -296,7 +444,7 @@ export default function GuideScreen({ navigation }) {
           setZones(fetchedZones);
         }
         const briefContext = (fetchedZones?.length ? fetchedZones : defaultZones)
-          .map(z => `${z.nom}: ${z.description ? z.description.substring(0, 80) : 'Point of interest'}`)
+          .map(z => `${getZoneName(z)}: ${getDefaultZoneDescription(z).substring(0, 80)}`)
           .join('\n');
         setGardenContext(briefContext);
       } catch (err) {
@@ -391,7 +539,7 @@ export default function GuideScreen({ navigation }) {
         }
 
         const reply = await pollinationResponse.text();
-        console.log("✅ Client-side keyless ChatGPT fallback succeeded!");
+        console.log("Client-side keyless ChatGPT fallback succeeded!");
         
         const botMsg = { id: Date.now().toString(), sender: 'bot', text: reply };
         setMessages(prev => [...prev, botMsg]);
@@ -399,7 +547,7 @@ export default function GuideScreen({ navigation }) {
         setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
         playGuideAudio(reply, botMsg.id);
       } catch (fallbackError) {
-        console.warn("❌ Client-side fallback also failed:", fallbackError.message);
+        console.warn("âŒ Client-side fallback also failed:", fallbackError.message);
         
         // 3. Client-side offline response fallback
         const fallbackText = getLocalGuideReply(text);
@@ -623,7 +771,7 @@ export default function GuideScreen({ navigation }) {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 24}
       >
         {/* Header */}
         <View style={styles.header}>
@@ -638,7 +786,7 @@ export default function GuideScreen({ navigation }) {
           <ScrollView 
             ref={scrollViewRef}
             style={styles.container} 
-            contentContainerStyle={[styles.scrollContent, { paddingBottom: 140 }]}
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: isKeyboardVisible ? 20 : 100 }]}
             keyboardShouldPersistTaps="handled"
             onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
           >
@@ -757,7 +905,7 @@ export default function GuideScreen({ navigation }) {
         {/* Input Area */}
         <View style={[
           styles.inputContainer, 
-          { bottom: isKeyboardVisible ? (Platform.OS === 'ios' ? 10 : 15) : 90 }
+          { marginBottom: isKeyboardVisible ? 10 : 90 }
         ]}>
           <View style={styles.inputWrapper}>
             <TouchableOpacity style={styles.addBtn} onPress={() => Alert.alert(t('guide_attachment_title'), t('guide_attachment_desc'))}>
@@ -1054,9 +1202,10 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   inputContainer: {
-    position: 'absolute',
-    left: 20,
-    right: 20,
+    width: '100%',
+    paddingHorizontal: 20,
+    zIndex: 20,
+    elevation: 20,
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -1092,3 +1241,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   }
 });
+

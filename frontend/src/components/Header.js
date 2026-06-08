@@ -1,19 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
-import { COLORS } from '../theme/theme';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Header({ title, onBack, rightElement }) {
+  const { theme } = useTheme();
   return (
     <View style={styles.header}>
       {onBack ? (
-        <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-          <ArrowLeft color={COLORS.primary} size={24} />
+        <TouchableOpacity onPress={onBack} style={[styles.backBtn, { borderColor: theme.accent, backgroundColor: theme.inputBg }]}>
+          <ArrowLeft color={theme.primary} size={24} />
         </TouchableOpacity>
       ) : (
         <View style={{ width: 44 }} />
       )}
-      <Text style={styles.headerTitle}>{title || 'JARDIN MAJORELLE'}</Text>
+      <Text style={[styles.headerTitle, { color: theme.textDark }]}>{title || 'JARDIN MAJORELLE'}</Text>
       {rightElement ? (
         rightElement
       ) : (

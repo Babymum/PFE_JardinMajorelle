@@ -1,12 +1,12 @@
 // src/theme/theme.js
-export const COLORS = {
+export const lightTheme = {
   // Palette Identitaire Jardin Majorelle
   primary: '#0A2B5E',       // Bleu Majorelle Iconique (Cobalt profond)
   accent: '#B4B813',        // Jaune Citron / Moutarde Majorelle
   accentLight: '#C5C90A',   // Jaune Clair
   success: '#127A3A',       // Vert Cactus / Jardin
   successBg: '#B4EAA5',     // Vert Clair
-  bg: '#F9F8F4',            // Blanc Sable / Desert White
+  bg: '#F7F5EE',            // Blanc Sable / Desert White (using the #F7F5EE used in HomeScreen)
   cardBg: '#FFF',           // Blanc pur pour les cartes
   textDark: '#0A2B5E',      // Texte principal bleu
   textLight: '#FFF',        // Texte blanc
@@ -27,7 +27,58 @@ export const COLORS = {
   cactusBg: '#E0DDD3',
   commercial: '#68778D',
   commercialBg: '#F0EFE9',
+
+  // UI elements
+  headerBg: '#F7F5EE',
+  headerBorder: '#E0DDD3',
+  inputBg: '#FFF',
+  inputBorder: 'rgba(10, 43, 94, 0.1)',
+  chatBotBg: '#EAE6D8',
+  chatUserBg: '#0A2B5E',
+  badgeBg: '#C5C90A',
 };
+
+export const darkTheme = {
+  // Palette Identitaire Somber (Lighter dark mode)
+  primary: '#5C90ED',       // Lighter Bleu Majorelle for dark mode
+  accent: '#C5C90A',        // Keep mustard
+  accentLight: '#DCE03B',
+  success: '#3CB065',
+  successBg: '#1C3E28',     
+  bg: '#1E293B',            // Lighter somber (Slate 800)
+  cardBg: '#2A3A52',        // Slate 700 for cards
+  textDark: '#F4F5F7',      // Softer white for text
+  textLight: '#FFF',
+  textGray: '#B4C0CF',      // Lighter gray for dark mode
+  textMuted: '#71839A',
+  danger: '#E06B68',
+
+  // Catégories spécifiques de zones (adapted for dark mode)
+  bassin: '#3CB065',
+  bassinBg: '#1C3E28',
+  bamboo: '#B4C0CF',
+  bambooBg: '#23344A',
+  museum: '#5C90ED',
+  museumBg: '#2A3A52',
+  villa: '#5C90ED',
+  villaBg: '#2A3A52',
+  cactus: '#B4C0CF',
+  cactusBg: '#23344A',
+  commercial: '#B4C0CF',
+  commercialBg: '#23344A',
+
+  // UI elements
+  headerBg: '#1E293B',
+  headerBorder: '#30415A',
+  inputBg: '#2A3A52',
+  inputBorder: '#30415A',
+  chatBotBg: '#2A3A52',
+  chatUserBg: '#30415A',
+  badgeBg: '#B4B813',
+};
+
+// Keep COLORS mapped to lightTheme temporarily to avoid breaking unmigrated screens
+export const COLORS = lightTheme;
 
 export const SPACING = {
   xs: 4,

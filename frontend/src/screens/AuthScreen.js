@@ -5,6 +5,7 @@ import { Shield, User, Lock, Eye, EyeOff, ArrowRight, ArrowLeft } from 'lucide-r
 import { adminLogin } from '../../api/api';
 import { AuthContext } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../context/ThemeContext';
 
 export default function AuthScreen({ navigation }) {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ export default function AuthScreen({ navigation }) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useContext(AuthContext);
+  const { theme, isDark } = useTheme();
 
   const handleRetour = () => {
     if (navigation.canGoBack()) {
@@ -42,34 +44,34 @@ export default function AuthScreen({ navigation }) {
     }
   };
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.bg }]}>
       <View style={styles.container}>
-        <TouchableOpacity style={styles.backBtn} onPress={handleRetour}>
-          <ArrowLeft color="#0A2B5E" size={24} />
+        <TouchableOpacity style={[styles.backBtn, { borderColor: theme.accent, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(10, 43, 94, 0.1)' }]} onPress={handleRetour}>
+          <ArrowLeft color={theme.primary} size={24} />
         </TouchableOpacity>
         {/* Logo Section */}
         <View style={styles.logoContainer}>
-          <View style={styles.logoBox}>
-            <Shield color="#FFF" size={32} />
+          <View style={[styles.logoBox, { backgroundColor: isDark ? theme.inputBg : '#004B9E' }]}>
+            <Shield color={isDark ? theme.primary : '#FFF'} size={32} />
           </View>
-          <Text style={styles.appName}>JARDIN MAJORELLE</Text>
-          <Text style={styles.appSub}>{t('auth_portal')}</Text>
+          <Text style={[styles.appName, { color: theme.textDark }]}>JARDIN MAJORELLE</Text>
+          <Text style={[styles.appSub, { color: theme.textGray }]}>{t('auth_portal')}</Text>
         </View>
 
         {/* Login Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>{t('auth_staff')}</Text>
-          <Text style={styles.cardDesc}>
+        <View style={[styles.card, { backgroundColor: isDark ? theme.cardBg : '#FFF' }]}>
+          <Text style={[styles.cardTitle, { color: theme.textDark }]}>{t('auth_staff')}</Text>
+          <Text style={[styles.cardDesc, { color: theme.textGray }]}>
             {t('auth_credentials_desc')}
           </Text>
 
-          <Text style={styles.inputLabel}>{t('auth_username_label')}</Text>
-          <View style={styles.inputWrapper}>
-            <User color="#0A2B5E" size={20} style={styles.inputIcon} />
+          <Text style={[styles.inputLabel, { color: theme.success }]}>{t('auth_username_label')}</Text>
+          <View style={[styles.inputWrapper, { backgroundColor: isDark ? theme.inputBg : '#F0EFE9' }]}>
+            <User color={theme.primary} size={20} style={styles.inputIcon} />
             <TextInput 
-              style={styles.textInput} 
+              style={[styles.textInput, { color: theme.textDark }]} 
               placeholder="nadine@test.com" 
-              placeholderTextColor="#A0AAB8"
+              placeholderTextColor={theme.textMuted}
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -77,23 +79,23 @@ export default function AuthScreen({ navigation }) {
             />
           </View>
 
-          <Text style={styles.inputLabel}>{t('auth_password_label')}</Text>
-          <View style={styles.inputWrapper}>
-            <Lock color="#0A2B5E" size={20} style={styles.inputIcon} />
+          <Text style={[styles.inputLabel, { color: theme.success }]}>{t('auth_password_label')}</Text>
+          <View style={[styles.inputWrapper, { backgroundColor: isDark ? theme.inputBg : '#F0EFE9' }]}>
+            <Lock color={theme.primary} size={20} style={styles.inputIcon} />
             <TextInput 
-              style={styles.textInput} 
+              style={[styles.textInput, { color: theme.textDark }]} 
               placeholder="••••••••••" 
-              placeholderTextColor="#A0AAB8"
+              placeholderTextColor={theme.textMuted}
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={setPassword}
             />
             <TouchableOpacity style={styles.eyeBtn} onPress={() => setShowPassword(!showPassword)}>
-              {showPassword ? <EyeOff color="#0A2B5E" size={20} /> : <Eye color="#0A2B5E" size={20} />}
+              {showPassword ? <EyeOff color={theme.primary} size={20} /> : <Eye color={theme.primary} size={20} />}
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.authBtn} onPress={handleLogin} disabled={isLoading}>
+          <TouchableOpacity style={[styles.authBtn, { backgroundColor: theme.primary }]} onPress={handleLogin} disabled={isLoading}>
             {isLoading ? (
               <ActivityIndicator color="#FFF" />
             ) : (
@@ -105,20 +107,20 @@ export default function AuthScreen({ navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.forgotBtn}>
-            <Text style={styles.forgotText}>{t('auth_forgot')}</Text>
+            <Text style={[styles.forgotText, { color: theme.success }]}>{t('auth_forgot')}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Footer Area */}
         <View style={styles.footer}>
-          <View style={styles.domeShape} />
+          <View style={[styles.domeShape, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]} />
           
-          <View style={styles.statusPill}>
-            <View style={styles.statusDot} />
-            <Text style={styles.statusText}>{t('auth_server_online')}   |   V2.4.0-SECURE</Text>
+          <View style={[styles.statusPill, { backgroundColor: isDark ? theme.inputBg : '#FFF' }]}>
+            <View style={[styles.statusDot, { backgroundColor: theme.success }]} />
+            <Text style={[styles.statusText, { color: isDark ? theme.success : '#4E5E2D' }]}>{t('auth_server_online')}   |   V2.4.0-SECURE</Text>
           </View>
 
-          <Text style={styles.legalText}>
+          <Text style={[styles.legalText, { color: theme.textMuted }]}>
             {t('auth_legal')}
           </Text>
         </View>

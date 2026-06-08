@@ -7,6 +7,8 @@ import * as Location from 'expo-location';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { getZones } from '../../api/api';
 import { useTranslation } from 'react-i18next';
+import { getZoneDesignProps } from '../utils/zoneDesign';
+import { useTheme } from '../context/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const MAP_AREA_WIDTH = SCREEN_WIDTH; 
@@ -19,6 +21,7 @@ const GARDEN_COORDS = {
 
 export default function MapScreen({ navigation }) {
   const { t, i18n } = useTranslation();
+  const { theme, isDark } = useTheme();
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedZone, setSelectedZone] = useState(null);
@@ -140,23 +143,6 @@ export default function MapScreen({ navigation }) {
     }
   }, [userLocation]);
 
-  const getZoneDesignProps = useCallback((typeZone) => {
-    const normalizedType = normalizeZoneType(typeZone);
-    const designMap = {
-      'bassin': { type: 'BASSIN', typeColor: '#B4EAA5', typeTextColor: '#127A3A', image: require('../../assets/majorelle_lilies.png') },
-      'jardin_bambou': { type: 'BAMBOO', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/majorelle_bamboo.png') },
-      'musee_berbere': { type: 'MUSEUM', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_museum.png') },
-      'villa_bleue': { type: 'VILLA', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') },
-      'jardin_cactus': { type: 'CACTUS', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/majorelle_cactus.png') },
-      'allee_jardin': { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_pathway.png') },
-      'cafe_majorelle': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_cafe.png') },
-      'cafe_bousafsaf': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_cafe2.png') },
-      'boutique': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_boutique.png') },
-      'librairie': { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_library.png') },
-    };
-    
-    return designMap[normalizedType] || { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') };
-  }, []);
 
   const filteredZones = useMemo(() => {
     if (activeFilter === 'HISTORICAL') {
@@ -248,20 +234,20 @@ export default function MapScreen({ navigation }) {
   };
 
   return (
-    <LinearGradient colors={['#D5DFD9', '#EAE6DF']} style={styles.container}>
+    <LinearGradient colors={isDark ? [theme.bg, theme.bg] : ['#D5DFD9', '#EAE6DF']} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.backBtn}>
-            <ArrowLeft color="#0A2B5E" size={24} />
+          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={[styles.backBtn, { borderColor: theme.accent, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(10, 43, 94, 0.1)' }]}>
+            <ArrowLeft color={theme.primary} size={24} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('guide_title')}</Text>
+          <Text style={[styles.headerTitle, { color: theme.textDark }]}>{t('guide_title')}</Text>
           <View style={{ width: 44 }} />
         </View>
 
-        <View style={styles.locationPanel}>
-          <Text style={styles.locationTitle}>{t('map_geolocation')}</Text>
-          <Text style={styles.locationSubtitle}>
+        <View style={[styles.locationPanel, { backgroundColor: isDark ? theme.cardBg : '#FFF' }]}>
+          <Text style={[styles.locationTitle, { color: theme.success }]}>{t('map_geolocation')}</Text>
+          <Text style={[styles.locationSubtitle, { color: theme.textDark }]}>
             {locationError
               ? locationError
               : userLocation
@@ -269,30 +255,8 @@ export default function MapScreen({ navigation }) {
                 : t('map_searching_location')}
           </Text>
           {userLocation && (
-            <Text style={styles.locationCoords}>Lat: {userLocation.latitude.toFixed(5)} · Lon: {userLocation.longitude.toFixed(5)}</Text>
+            <Text style={[styles.locationCoords, { color: theme.textGray }]}>Lat: {userLocation.latitude.toFixed(5)} · Lon: {userLocation.longitude.toFixed(5)}</Text>
           )}
-        </View>
-
-        {/* Top Tabs */}
-        <View style={styles.tabContainer}>
-          <TouchableOpacity 
-            style={[styles.tabInactive, activeFilter === 'ALL' && styles.tabActive]} 
-            onPress={() => setActiveFilter('ALL')}
-          >
-            <Text style={[styles.tabTextInactive, activeFilter === 'ALL' && styles.tabTextActive]}>{t('map_filter_all')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tabInactive, activeFilter === 'HISTORICAL' && styles.tabActive]} 
-            onPress={() => setActiveFilter('HISTORICAL')}
-          >
-            <Text style={[styles.tabTextInactive, activeFilter === 'HISTORICAL' && styles.tabTextActive]}>{t('map_filter_historical')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.tabInactive, activeFilter === 'BOTANICAL' && styles.tabActive]} 
-            onPress={() => setActiveFilter('BOTANICAL')}
-          >
-            <Text style={[styles.tabTextInactive, activeFilter === 'BOTANICAL' && styles.tabTextActive]}>{t('map_filter_botanical')}</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Map Elements (Dynamic Zones) */}
@@ -359,10 +323,10 @@ export default function MapScreen({ navigation }) {
 
         {/* Right Controls */}
         <View style={styles.rightControls}>
-          <TouchableOpacity style={styles.ctrlBtn} onPress={handleZoomIn}><Plus color="#0A2B5E" size={20} /></TouchableOpacity>
-          <TouchableOpacity style={styles.ctrlBtn} onPress={handleZoomOut}><Minus color="#0A2B5E" size={20} /></TouchableOpacity>
-          <TouchableOpacity style={[styles.ctrlBtn, styles.ctrlBtnDark]} onPress={handleRecenter}><Crosshair color="#FFF" size={20} /></TouchableOpacity>
-          <TouchableOpacity style={[styles.ctrlBtn, styles.routeBtn]} onPress={handleOpenDirections}>
+          <TouchableOpacity style={[styles.ctrlBtn, { backgroundColor: isDark ? theme.inputBg : '#FFF' }]} onPress={handleZoomIn}><Plus color={theme.primary} size={20} /></TouchableOpacity>
+          <TouchableOpacity style={[styles.ctrlBtn, { backgroundColor: isDark ? theme.inputBg : '#FFF' }]} onPress={handleZoomOut}><Minus color={theme.primary} size={20} /></TouchableOpacity>
+          <TouchableOpacity style={[styles.ctrlBtn, styles.ctrlBtnDark, { backgroundColor: theme.primary }]} onPress={handleRecenter}><Crosshair color="#FFF" size={20} /></TouchableOpacity>
+          <TouchableOpacity style={[styles.ctrlBtn, styles.routeBtn, { backgroundColor: theme.success }]} onPress={handleOpenDirections}>
             <Route color="#FFF" size={20} />
           </TouchableOpacity>
         </View>
@@ -370,38 +334,11 @@ export default function MapScreen({ navigation }) {
         {/* Bottom Elements */}
         <View style={styles.bottomOverlay}>
           <TouchableOpacity
-            style={[styles.layerBtn, is3DMode && styles.layerBtnActive]}
+            style={[styles.layerBtn, is3DMode && styles.layerBtnActive, { backgroundColor: is3DMode ? theme.primary : (isDark ? theme.inputBg : '#FFF') }]}
             onPress={handleToggle3D}
           >
-            <Layers color={is3DMode ? '#FFF' : '#127A3A'} size={24} />
+            <Layers color={is3DMode ? '#FFF' : theme.success} size={24} />
           </TouchableOpacity>
-          
-          {selectedZone && (
-            <View style={styles.bottomCard}>
-              <Image
-                source={selectedZone.image && /^https?:\/\//i.test(selectedZone.image)
-                  ? { uri: selectedZone.image }
-                  : getZoneDesignProps(selectedZone.typeZone).image}
-                style={styles.cardCover}
-              />
-              <View style={styles.cardContent}>
-                <Text style={styles.cardCategory}>
-                  {t(`type_${getZoneDesignProps(selectedZone.typeZone).type.toLowerCase()}`)} {t('map_zone_suffix')}
-                </Text>
-                <Text style={styles.cardTitle}>{t('zone_name_' + selectedZone.typeZone, selectedZone.nom)}</Text>
-                <Text style={styles.cardDesc} numberOfLines={2}>{t('zone_desc_' + selectedZone.typeZone, selectedZone.description)}</Text>
-                
-                <View style={styles.cardActions}>
-                  <TouchableOpacity style={styles.btnPrimary} onPress={() => navigation.navigate('ZoneDetail', { zone: selectedZone })}>
-                    <Text style={styles.btnPrimaryText}>{t('map_explore_zone')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.btnSecondary} onPress={() => Alert.alert(t('map_saved_title'), t('map_saved_bookmark'))}>
-                    <Bookmark color="#0A2B5E" size={18} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          )}
         </View>
 
       </SafeAreaView>

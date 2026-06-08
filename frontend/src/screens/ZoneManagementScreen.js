@@ -4,11 +4,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LogOut, Calendar, Search, Filter, EyeOff, Plus, X, Trash2, ArrowLeft } from 'lucide-react-native';
 import { getZones, createZone, updateZone, deleteZone } from '../../api/api';
 import { Modal } from 'react-native';
+import { getZoneDesignProps } from '../utils/zoneDesign';
 import { AuthContext } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../context/ThemeContext';
 
 export default function ZoneManagementScreen({ route, navigation }) {
   const { t } = useTranslation();
+  const { theme, isDark } = useTheme();
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -36,33 +39,6 @@ export default function ZoneManagementScreen({ route, navigation }) {
     }
   };
 
-  // Helper mapper to map backend enum types to our frontend design tokens
-  const getZoneDesignProps = (typeZone) => {
-    switch (typeZone) {
-      case 'bassin':
-        return { type: 'BASSIN', typeColor: '#B4EAA5', typeTextColor: '#127A3A', image: require('../../assets/majorelle_lilies.png') };
-      case 'jardin_bambou':
-        return { type: 'BAMBOO', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/majorelle_bamboo.png') };
-      case 'musee_berbere':
-        return { type: 'MUSEUM', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_museum.png') };
-      case 'villa_bleue':
-        return { type: 'VILLA', typeColor: '#DCE4F8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') };
-      case 'jardin_cactus':
-        return { type: 'CACTUS', typeColor: '#E0DDD3', typeTextColor: '#68778D', image: require('../../assets/majorelle_cactus.png') };
-      case 'allee_jardin':
-        return { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_pathway.png') };
-      case 'cafe_majorelle':
-        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_cafe.png') };
-      case 'cafe_bousafsaf':
-        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_cafe2.png') };
-      case 'boutique':
-        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_boutique.png') };
-      case 'librairie':
-        return { type: 'COMMERCIAL', typeColor: '#F0EFE9', typeTextColor: '#68778D', image: require('../../assets/majorelle_library.png') };
-      default:
-        return { type: 'GARDEN', typeColor: '#EAE6D8', typeTextColor: '#0A2B5E', image: require('../../assets/majorelle_villa.png') };
-    }
-  };
 
   const openModal = (zone = null) => {
     if (zone) {
@@ -128,102 +104,101 @@ export default function ZoneManagementScreen({ route, navigation }) {
 
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.bg }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} style={styles.backBtn}>
-          <ArrowLeft color="#0A2B5E" size={24} />
+        <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} style={[styles.backBtn, { borderColor: theme.accent, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(10, 43, 94, 0.1)' }]}>
+          <ArrowLeft color={theme.primary} size={24} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('guide_title')}</Text>
+        <Text style={[styles.headerTitle, { color: theme.textDark }]}>{t('guide_title')}</Text>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-          <LogOut color="#D9534F" size={20} />
+          <LogOut color={theme.danger} size={20} />
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
         {/* Title Group */}
         <View style={styles.titleSection}>
-          <Text style={styles.subtitle}>{t('manage_infra')}</Text>
+          <Text style={[styles.subtitle, { color: theme.textGray }]}>{t('manage_infra')}</Text>
           <View>
-            <Text style={styles.title}>{t('manage_title')}</Text>
-            <View style={styles.titleUnderline} />
+            <Text style={[styles.title, { color: theme.textDark }]}>{t('manage_title')}</Text>
+            <View style={[styles.titleUnderline, { backgroundColor: theme.accent }]} />
           </View>
         </View>
 
         {/* Top Cards block */}
-        <View style={styles.totalZonesCard}>
+        <View style={[styles.totalZonesCard, { backgroundColor: isDark ? theme.cardBg : '#004B9E' }]}>
           <Text style={styles.cardHeaderLight}>{t('manage_total_zones')}</Text>
           <Text style={styles.cardHugeTextLight}>{zones.length < 10 ? `0${zones.length}` : zones.length}</Text>
           <Text style={styles.cardSubLight}>{t('manage_synced')}</Text>
-          {/* Watermark grid could be represented with absolute positioning, omitting for simplicity */}
         </View>
 
-        <View style={styles.activeStatusCard}>
-          <Text style={styles.cardHeaderDark}>{t('manage_active_status')}</Text>
+        <View style={[styles.activeStatusCard, { backgroundColor: theme.successBg }]}>
+          <Text style={[styles.cardHeaderDark, { color: isDark ? theme.textDark : '#0A2B5E' }]}>{t('manage_active_status')}</Text>
           <View style={styles.activeRow}>
-            <Text style={styles.cardHugeTextDark}>18</Text>
-            <Text style={styles.activeLabel}>{t('manage_live')}</Text>
+            <Text style={[styles.cardHugeTextDark, { color: isDark ? theme.textDark : '#0A2B5E' }]}>18</Text>
+            <Text style={[styles.activeLabel, { color: isDark ? theme.textDark : '#0A2B5E' }]}>{t('manage_live')}</Text>
           </View>
           <View style={styles.progressBarBg}>
-            <View style={styles.progressBarFill} />
+            <View style={[styles.progressBarFill, { backgroundColor: theme.success }]} />
           </View>
         </View>
 
         <View style={styles.rowCards}>
-          <View style={styles.halfCard}>
-            <Text style={styles.cardHeaderDark}>{t('manage_maintenance')}</Text>
-            <Text style={styles.cardHugeTextDark}>04</Text>
+          <View style={[styles.halfCard, { backgroundColor: isDark ? theme.inputBg : '#EAE6D8' }]}>
+            <Text style={[styles.cardHeaderDark, { color: theme.textDark }]}>{t('manage_maintenance')}</Text>
+            <Text style={[styles.cardHugeTextDark, { color: theme.textDark }]}>04</Text>
             <View style={styles.scheduledRow}>
-              <Calendar color="#868305" size={12} />
-              <Text style={styles.scheduledText}>{t('manage_scheduled')}</Text>
+              <Calendar color={theme.accent} size={12} />
+              <Text style={[styles.scheduledText, { color: theme.accent }]}>{t('manage_scheduled')}</Text>
             </View>
           </View>
 
-          <View style={styles.halfCard}>
-            <Text style={styles.cardHeaderDark}>{t('manage_hidden')}</Text>
-            <Text style={styles.cardHugeTextDark}>02</Text>
+          <View style={[styles.halfCard, { backgroundColor: isDark ? theme.inputBg : '#EAE6D8' }]}>
+            <Text style={[styles.cardHeaderDark, { color: theme.textDark }]}>{t('manage_hidden')}</Text>
+            <Text style={[styles.cardHugeTextDark, { color: theme.textDark }]}>02</Text>
             <View style={styles.hiddenDotsRow}>
-              <View style={[styles.dot, {backgroundColor: '#0A2B5E'}]} />
-              <View style={[styles.dot, {backgroundColor: '#127A3A', marginLeft: -8}]} />
+              <View style={[styles.dot, {backgroundColor: theme.primary}]} />
+              <View style={[styles.dot, {backgroundColor: theme.success, marginLeft: -8}]} />
             </View>
           </View>
         </View>
 
         {/* List Section */}
-        <View style={styles.listSection}>
+        <View style={[styles.listSection, { backgroundColor: isDark ? theme.cardBg : '#FFF' }]}>
           <View style={styles.listHeaderRow}>
-            <Text style={styles.listTitle}>{t('manage_connected_title')}</Text>
-            <View style={styles.searchBox}>
-              <Search color="#68778D" size={16} />
+            <Text style={[styles.listTitle, { color: theme.textDark }]}>{t('manage_connected_title')}</Text>
+            <View style={[styles.searchBox, { backgroundColor: isDark ? theme.inputBg : '#F0EFE9' }]}>
+              <Search color={theme.textGray} size={16} />
               <TextInput 
-                style={styles.searchInput}
+                style={[styles.searchInput, { color: theme.textDark }]}
                 placeholder={t('manage_search_placeholder')}
-                placeholderTextColor="#8C9BB0"
+                placeholderTextColor={theme.textMuted}
               />
             </View>
-            <TouchableOpacity style={styles.filterBtn}>
-              <Filter color="#0A2B5E" size={16} />
+            <TouchableOpacity style={[styles.filterBtn, { backgroundColor: isDark ? theme.inputBg : '#F0EFE9' }]}>
+              <Filter color={theme.primary} size={16} />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.tableHeaderRow}>
+          <View style={[styles.tableHeaderRow, { backgroundColor: isDark ? theme.inputBg : '#F9F8F4', borderColor: theme.inputBorder }]}>
             <Text style={[styles.tableColHeader, { flex: 2.5 }]}>{t('manage_col_name')}</Text>
             <Text style={[styles.tableColHeader, { flex: 1.5 }]}>{t('manage_col_type')}</Text>
             <Text style={[styles.tableColHeader, { flex: 1, textAlign: 'right' }]}>{t('manage_col_actions')}</Text>
           </View>
 
           {loading ? (
-            <ActivityIndicator size="large" color="#0A2B5E" style={{ marginVertical: 30 }} />
+            <ActivityIndicator size="large" color={theme.primary} style={{ marginVertical: 30 }} />
           ) : (
             zones.map((zone, idx) => {
               const props = getZoneDesignProps(zone.typeZone);
               return (
-                <View key={zone._id || idx} style={styles.tableRow}>
+                <View key={zone._id || idx} style={[styles.tableRow, { borderColor: theme.inputBorder }]}>
                   <View style={[styles.tableCell, { flex: 2.5, flexDirection: 'row', alignItems: 'center' }]}>
                     <Image source={props.image} style={styles.rowImage} />
                     <View style={{marginLeft: 10, flex: 1}}>
-                      <Text style={styles.rowName} numberOfLines={2}>{zone.nom}</Text>
-                      <Text style={styles.rowId}>ID: {zone._id ? zone._id.substring(0, 8) : 'NEW'}</Text>
+                      <Text style={[styles.rowName, { color: theme.textDark }]} numberOfLines={2}>{zone.nom}</Text>
+                      <Text style={[styles.rowId, { color: theme.textGray }]}>ID: {zone._id ? zone._id.substring(0, 8) : 'NEW'}</Text>
                     </View>
                   </View>
 
@@ -235,10 +210,10 @@ export default function ZoneManagementScreen({ route, navigation }) {
 
                   <View style={[styles.tableCell, { flex: 1, justifyContent: 'center', alignItems: 'flex-end', flexDirection: 'row', gap: 10 }]}>
                     <TouchableOpacity onPress={() => openModal(zone)}>
-                        <Text style={{color: '#0A2B5E', fontSize: 10, fontWeight: '700'}}>{t('manage_edit')}</Text>
+                        <Text style={{color: theme.primary, fontSize: 10, fontWeight: '700'}}>{t('manage_edit')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleDelete(zone._id)}>
-                        <Trash2 color="#D9534F" size={14} />
+                        <Trash2 color={theme.danger} size={14} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -246,11 +221,11 @@ export default function ZoneManagementScreen({ route, navigation }) {
             })
           )}
 
-          <View style={styles.paginationRow}>
-            <Text style={styles.showingText}>{t('manage_showing')} {zones.length}</Text>
+          <View style={[styles.paginationRow, { backgroundColor: isDark ? theme.inputBg : '#F9F8F4' }]}>
+            <Text style={[styles.showingText, { color: theme.textGray }]}>{t('manage_showing')} {zones.length}</Text>
             <View style={styles.pageBtns}>
-              <TouchableOpacity style={styles.pageBtn}><Text style={styles.pageBtnText}>{'<'}</Text></TouchableOpacity>
-              <TouchableOpacity style={styles.pageBtn}><Text style={styles.pageBtnText}>{'>'}</Text></TouchableOpacity>
+              <TouchableOpacity style={[styles.pageBtn, { backgroundColor: theme.cardBg, borderColor: theme.inputBorder }]}><Text style={[styles.pageBtnText, { color: theme.textGray }]}>{'<'}</Text></TouchableOpacity>
+              <TouchableOpacity style={[styles.pageBtn, { backgroundColor: theme.cardBg, borderColor: theme.inputBorder }]}><Text style={[styles.pageBtnText, { color: theme.textGray }]}>{'>'}</Text></TouchableOpacity>
             </View>
           </View>
 
@@ -261,73 +236,79 @@ export default function ZoneManagementScreen({ route, navigation }) {
       </ScrollView>
 
       {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab} onPress={() => openModal()}>
-        <Plus color="#0A2B5E" size={24} />
+      <TouchableOpacity style={[styles.fab, { backgroundColor: theme.accent, shadowColor: theme.accent }]} onPress={() => openModal()}>
+        <Plus color={isDark ? theme.bg : '#0A2B5E'} size={24} />
       </TouchableOpacity>
 
       {/* CRUD Modal */}
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, { backgroundColor: theme.bg }]}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{editingZone ? t('manage_edit_zone') : t('manage_new_zone')}</Text>
+              <Text style={[styles.modalTitle, { color: theme.textDark }]}>{editingZone ? t('manage_edit_zone') : t('manage_new_zone')}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <X color="#0A2B5E" size={24} />
+                <X color={theme.textDark} size={24} />
               </TouchableOpacity>
             </View>
             
             <ScrollView style={styles.modalForm}>
               <Text style={styles.inputLabel}>{t('manage_field_name')}</Text>
               <TextInput 
-                style={styles.modalInput} 
+                style={[styles.modalInput, { backgroundColor: isDark ? theme.inputBg : '#F0EFE9', color: theme.textDark }]} 
                 value={formData.nom} 
                 onChangeText={(text) => setFormData({...formData, nom: text})}
                 placeholder="Ex: Le Grand Bassin"
+                placeholderTextColor={theme.textMuted}
               />
 
               <Text style={styles.inputLabel}>{t('manage_field_type')}</Text>
               <TextInput 
-                style={styles.modalInput} 
+                style={[styles.modalInput, { backgroundColor: isDark ? theme.inputBg : '#F0EFE9', color: theme.textDark }]} 
                 value={formData.typeZone} 
                 onChangeText={(text) => setFormData({...formData, typeZone: text.toLowerCase()})}
                 placeholder="Ex: bassin, jardin_cactus..."
+                placeholderTextColor={theme.textMuted}
               />
 
               <Text style={styles.inputLabel}>{t('manage_field_desc')}</Text>
               <TextInput 
-                style={[styles.modalInput, { height: 80 }]} 
+                style={[styles.modalInput, { height: 80, backgroundColor: isDark ? theme.inputBg : '#F0EFE9', color: theme.textDark }]} 
                 value={formData.description} 
                 onChangeText={(text) => setFormData({...formData, description: text})}
                 placeholder="Description de la zone..."
+                placeholderTextColor={theme.textMuted}
                 multiline
               />
 
               <Text style={styles.inputLabel}>{t('manage_field_pos')}</Text>
               <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <TextInput 
-                  style={[styles.modalInput, {flex: 1, marginRight: 5}]} 
+                  style={[styles.modalInput, {flex: 1, marginRight: 5, backgroundColor: isDark ? theme.inputBg : '#F0EFE9', color: theme.textDark}]} 
                   value={formData.position3D.x.toString()} 
                   keyboardType="numeric"
                   onChangeText={(text) => setFormData({...formData, position3D: {...formData.position3D, x: parseFloat(text) || 0}})}
                   placeholder="X"
+                  placeholderTextColor={theme.textMuted}
                 />
                 <TextInput 
-                  style={[styles.modalInput, {flex: 1, marginHorizontal: 5}]} 
+                  style={[styles.modalInput, {flex: 1, marginHorizontal: 5, backgroundColor: isDark ? theme.inputBg : '#F0EFE9', color: theme.textDark}]} 
                   value={formData.position3D.y.toString()} 
                   keyboardType="numeric"
                   onChangeText={(text) => setFormData({...formData, position3D: {...formData.position3D, y: parseFloat(text) || 0}})}
                   placeholder="Y"
+                  placeholderTextColor={theme.textMuted}
                 />
                 <TextInput 
-                  style={[styles.modalInput, {flex: 1, marginLeft: 5}]} 
+                  style={[styles.modalInput, {flex: 1, marginLeft: 5, backgroundColor: isDark ? theme.inputBg : '#F0EFE9', color: theme.textDark}]} 
                   value={formData.position3D.z.toString()} 
                   keyboardType="numeric"
                   onChangeText={(text) => setFormData({...formData, position3D: {...formData.position3D, z: parseFloat(text) || 0}})}
                   placeholder="Z"
+                  placeholderTextColor={theme.textMuted}
                 />
               </View>
 
-              <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+              <TouchableOpacity style={[styles.saveBtn, { backgroundColor: theme.primary }]} onPress={handleSave}>
                 <Text style={styles.saveBtnText}>{t('manage_save')}</Text>
               </TouchableOpacity>
             </ScrollView>

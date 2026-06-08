@@ -5,7 +5,7 @@ import { ArrowLeft, Box, Maximize2, PlayCircle } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { getZones } from '../../api/api';
-
+import { getZoneDesignProps } from '../utils/zoneDesign';
 export default function TourScreen({ navigation }) {
   const { t } = useTranslation();
   const [zones, setZones] = useState([]);
@@ -25,23 +25,6 @@ export default function TourScreen({ navigation }) {
     };
     fetchZones();
   }, []);
-
-  const getZoneDesignProps = (typeZone) => {
-    const designMap = {
-      'bassin': { fallbackImage: require('../../assets/majorelle_lilies.png') },
-      'jardin_bambou': { fallbackImage: require('../../assets/majorelle_bamboo.png') },
-      'musee_berbere': { fallbackImage: require('../../assets/majorelle_museum.png') },
-      'villa_bleue': { fallbackImage: require('../../assets/majorelle_villa.png') },
-      'jardin_cactus': { fallbackImage: require('../../assets/majorelle_cactus.png') },
-      'allee_jardin': { fallbackImage: require('../../assets/majorelle_pathway.png') },
-      'cafe_majorelle': { fallbackImage: require('../../assets/majorelle_cafe.png') },
-      'cafe_bousafsaf': { fallbackImage: require('../../assets/majorelle_cafe2.png') },
-      'boutique': { fallbackImage: require('../../assets/majorelle_boutique.png') },
-      'librairie': { fallbackImage: require('../../assets/majorelle_library.png') },
-    };
-    
-    return designMap[typeZone] || { fallbackImage: require('../../assets/majorelle_villa.png') };
-  };
 
   const handleRetour = () => {
     if (navigation.canGoBack()) {
@@ -75,7 +58,7 @@ export default function TourScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ImageBackground 
-        source={require('../../assets/majorelle_villa.png')} 
+        source={require('../../assets/images/villa-bleue.png')} 
         style={styles.container}
       >
         <LinearGradient
@@ -107,8 +90,7 @@ export default function TourScreen({ navigation }) {
              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.gallery}>
                 {zones.map((zone, index) => {
                   const design = getZoneDesignProps(zone.typeZone);
-                  const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://'));
-                  const mainImage = isRemoteUrl ? { uri: zone.image } : design.fallbackImage;
+                  const mainImage = design.fallbackImage;
                   return (
                     <TouchableOpacity 
                       key={zone._id} 
