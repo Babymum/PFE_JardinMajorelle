@@ -152,7 +152,6 @@ export default function ZoneDetailScreen({ route, navigation }) {
           {audioSource ? (
             <AudioPlayer audioUrl={audioSource} />
           ) : null}
-
           {/* Description */}
           <Text style={styles.sectionTitle}>{t('detail_history_botany')}</Text>
           <Text style={styles.descriptionText}>{t('zone_desc_' + zone.typeZone, zone.description)}</Text>
@@ -162,16 +161,19 @@ export default function ZoneDetailScreen({ route, navigation }) {
             <View style={styles.galleryContainer}>
               <Text style={styles.sectionTitle}>{t('detail_gallery')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryScroll}>
-                {zone.gallery.map((imgUrl, idx) => (
-                  <TouchableOpacity 
-                    key={idx} 
-                    style={styles.galleryCard}
-                    onPress={() => setSelectedImage(imgUrl)}
-                    activeOpacity={0.8}
-                  >
-                    <Image source={{ uri: imgUrl }} style={styles.galleryImg} />
-                  </TouchableOpacity>
-                ))}
+                {zone.gallery.map((imgSource, idx) => {
+                  const sourceProp = typeof imgSource === 'string' ? { uri: imgSource } : imgSource;
+                  return (
+                    <TouchableOpacity 
+                      key={idx} 
+                      style={styles.galleryCard}
+                      onPress={() => setSelectedImage(imgSource)}
+                      activeOpacity={0.8}
+                    >
+                      <Image source={sourceProp} style={styles.galleryImg} />
+                    </TouchableOpacity>
+                  );
+                })}
               </ScrollView>
             </View>
           ) : null}
@@ -205,14 +207,14 @@ export default function ZoneDetailScreen({ route, navigation }) {
           {/* Large Image */}
           {selectedImage && (
             <Image 
-              source={{ uri: selectedImage }} 
+              source={typeof selectedImage === 'string' ? { uri: selectedImage } : selectedImage}
               style={styles.modalImage} 
               resizeMode="contain" 
             />
           )}
 
           {/* Action buttons at the bottom */}
-          {selectedImage && (
+          {selectedImage && typeof selectedImage === 'string' && (
             <View style={styles.modalActions}>
               <TouchableOpacity 
                 style={styles.modalActionBtn} 

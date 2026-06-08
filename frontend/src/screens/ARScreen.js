@@ -5,9 +5,12 @@ import { Menu, MapPin, Plus, Minus, Scan, Headphones, Share2, ArrowLeft } from '
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useTranslation } from 'react-i18next';
 import { getZones } from '../../api/api';
+import { getZoneDesignProps } from '../utils/zoneDesign';
+import { useTheme } from '../context/ThemeContext';
 
 export default function ARScreen({ navigation }) {
   const { t } = useTranslation();
+  const { theme, isDark } = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const [telemetry, setTelemetry] = useState({ x: 142.084, y: 0.821, z: -22.419 });
   const [isCameraActive, setIsCameraActive] = useState(true);
@@ -28,23 +31,6 @@ export default function ARScreen({ navigation }) {
     };
     fetchZones();
   }, []);
-
-  const getZoneDesignProps = (typeZone) => {
-    const designMap = {
-      'bassin': { fallbackImage: require('../../assets/majorelle_lilies.png') },
-      'jardin_bambou': { fallbackImage: require('../../assets/majorelle_bamboo.png') },
-      'musee_berbere': { fallbackImage: require('../../assets/majorelle_museum.png') },
-      'villa_bleue': { fallbackImage: require('../../assets/majorelle_villa.png') },
-      'jardin_cactus': { fallbackImage: require('../../assets/majorelle_cactus.png') },
-      'allee_jardin': { fallbackImage: require('../../assets/majorelle_pathway.png') },
-      'cafe_majorelle': { fallbackImage: require('../../assets/majorelle_cafe.png') },
-      'cafe_bousafsaf': { fallbackImage: require('../../assets/majorelle_cafe2.png') },
-      'boutique': { fallbackImage: require('../../assets/majorelle_boutique.png') },
-      'librairie': { fallbackImage: require('../../assets/majorelle_library.png') },
-    };
-    
-    return designMap[typeZone] || { fallbackImage: require('../../assets/majorelle_villa.png') };
-  };
 
   const handleRetour = () => {
     if (navigation.canGoBack()) {
@@ -91,11 +77,11 @@ export default function ARScreen({ navigation }) {
       <View style={styles.header}>
         <TouchableOpacity 
           onPress={handleRetour} 
-          style={[styles.backBtn, { backgroundColor: isCameraActive ? 'rgba(10, 43, 94, 0.4)' : '#0A2B5E' }]}
+          style={[styles.backBtn, { backgroundColor: isCameraActive ? 'rgba(10, 43, 94, 0.4)' : theme.primary }]}
         >
           <ArrowLeft color="#FFF" size={24} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: isCameraActive ? '#FFF' : '#0A2B5E' }]} numberOfLines={1}>
+        <Text style={[styles.headerTitle, { color: isCameraActive ? '#FFF' : theme.textDark }]} numberOfLines={1}>
           {t('ar_title')}
         </Text>
         <TouchableOpacity onPress={() => setIsCameraActive(!isCameraActive)} style={styles.cameraToggleBtn}>
@@ -139,11 +125,7 @@ export default function ARScreen({ navigation }) {
         </View>
       )}
 
-      {isCameraActive && (
-        <TouchableOpacity style={[styles.scanBtn, styles.smallScanBtn]} onPress={handleScan}>
-          <Scan color="#FFF" size={16} />
-        </TouchableOpacity>
-      )}
+
 
       {/* Bottom Horizontal Cards */}
       {!isCameraActive && (
@@ -156,13 +138,13 @@ export default function ARScreen({ navigation }) {
               return (
                 <TouchableOpacity 
                   key={zone._id} 
-                  style={styles.arCard} 
+                  style={[styles.arCard, { backgroundColor: theme.chatBotBg }]} 
                   onPress={() => navigation.navigate('ZoneDetail', { zone })}
                 >
                   <Image source={mainImage} style={styles.arCardImage} />
                   <View style={styles.arCardContent}>
-                    <Text style={styles.arCardTitle} numberOfLines={1}>{t('zone_name_' + zone.typeZone, zone.nom)}</Text>
-                    <Text style={styles.arCardSub} numberOfLines={1}>{t('zone_desc_' + zone.typeZone, zone.description)}</Text>
+                    <Text style={[styles.arCardTitle, { color: theme.textDark }]} numberOfLines={1}>{t('zone_name_' + zone.typeZone, zone.nom)}</Text>
+                    <Text style={[styles.arCardSub, { color: theme.textGray }]} numberOfLines={1}>{t('zone_desc_' + zone.typeZone, zone.description)}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -190,7 +172,7 @@ export default function ARScreen({ navigation }) {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: '#F5F4EC' }]}>
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
       {renderContent()}
     </View>
   );
@@ -230,11 +212,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     marginTop: 10,
     minHeight: 50,
-    position: 'relative',
     width: '100%',
   },
   headerTitle: {
@@ -393,15 +374,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   backBtn: {
-    position: 'absolute',
-    left: 20,
-    zIndex: 10,
     backgroundColor: 'rgba(10, 43, 94, 0.4)',
     width: 44,
     height: 44,
     borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: '#B4B813', // Iconic Jardin Majorelle Yellow/Mustard
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -411,15 +387,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cameraToggleBtn: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 10,
     backgroundColor: '#0A2B5E',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: '#B4B813', // Yellow accent border
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',

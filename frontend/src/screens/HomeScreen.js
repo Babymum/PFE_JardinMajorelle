@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, I18nManager } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert, I18nManager, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { QrCode, Menu, ScanFace, Compass, Bot, Sparkles, Lock } from 'lucide-react-native';
+import { Ticket, Menu, ScanFace, Compass, Bot, Sparkles, Lock, Moon, Sun } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../context/ThemeContext';
 import { getZones } from '../../api/api';
-
+import { getZoneDesignProps } from '../utils/zoneDesign';
 export default function HomeScreen({ navigation }) {
   const { t, i18n } = useTranslation();
+  const { theme, isDark, toggleTheme } = useTheme();
   const [zones, setZones] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -30,25 +32,8 @@ export default function HomeScreen({ navigation }) {
     i18n.changeLanguage(lng);
   };
 
-  const getZoneDesignProps = (typeZone) => {
-    const designMap = {
-      'bassin': { fallbackImage: require('../../assets/majorelle_lilies.png') },
-      'jardin_bambou': { fallbackImage: require('../../assets/majorelle_bamboo.png') },
-      'musee_berbere': { fallbackImage: require('../../assets/majorelle_museum.png') },
-      'villa_bleue': { fallbackImage: require('../../assets/majorelle_villa.png') },
-      'jardin_cactus': { fallbackImage: require('../../assets/majorelle_cactus.png') },
-      'allee_jardin': { fallbackImage: require('../../assets/majorelle_pathway.png') },
-      'cafe_majorelle': { fallbackImage: require('../../assets/majorelle_cafe.png') },
-      'cafe_bousafsaf': { fallbackImage: require('../../assets/majorelle_cafe2.png') },
-      'boutique': { fallbackImage: require('../../assets/majorelle_boutique.png') },
-      'librairie': { fallbackImage: require('../../assets/majorelle_library.png') },
-    };
-    
-    return designMap[typeZone] || { fallbackImage: require('../../assets/majorelle_villa.png') };
-  };
-
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.bg }]}>
       <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
@@ -66,10 +51,6 @@ export default function HomeScreen({ navigation }) {
                 <Text style={[styles.langBtnText, i18n.language === 'ar' && styles.langBtnTextActive]}>AR</Text>
               </TouchableOpacity>
             </View>
-            
-            <TouchableOpacity onPress={() => navigation.navigate('Auth')} style={styles.lockBtn}>
-              <Lock color="#0A2B5E" size={16} />
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -86,7 +67,7 @@ export default function HomeScreen({ navigation }) {
         {/* 3D Tour Main Card */}
         <TouchableOpacity style={styles.mainCard} onPress={() => navigation.navigate('3DTour')}>
           <Image 
-            source={require('../../assets/majorelle_villa.png')} 
+            source={require('../../assets/images/villa-bleue.png')} 
             style={styles.mainCardImage} 
           />
           <LinearGradient
@@ -109,7 +90,7 @@ export default function HomeScreen({ navigation }) {
         {/* AR and Map Cards */}
         <View style={styles.rowCards}>
           <TouchableOpacity 
-            style={[styles.halfCard, {backgroundColor: '#0A3A69'}]}
+            style={[styles.halfCard, {backgroundColor: isDark ? theme.cardBg : '#0A3A69'}]}
             onPress={() => navigation?.navigate('AR')}
           >
             <ScanFace color="#FFF" size={28} />
@@ -117,21 +98,21 @@ export default function HomeScreen({ navigation }) {
             <Text style={[styles.halfCardSubtitle, {color: 'rgba(255,255,255,0.7)'}]}>{t('scan_garden')}</Text>
           </TouchableOpacity>
  
-          <TouchableOpacity style={[styles.halfCard, {backgroundColor: '#EAE6DF'}]} onPress={() => navigation.navigate('Map')}>
-            <Compass color="#0A2B5E" size={28} />
-            <Text style={[styles.halfCardTitle, {color: '#0A2B5E'}]}>{t('live_map')}</Text>
-            <Text style={[styles.halfCardSubtitle, {color: 'rgba(10,43,94,0.6)'}]}>{t('navigate_paths')}</Text>
+          <TouchableOpacity style={[styles.halfCard, {backgroundColor: isDark ? theme.chatBotBg : '#EAE6DF'}]} onPress={() => navigation.navigate('Map')}>
+            <Compass color={isDark ? theme.textDark : '#0A2B5E'} size={28} />
+            <Text style={[styles.halfCardTitle, {color: isDark ? theme.textDark : '#0A2B5E'}]}>{t('live_map')}</Text>
+            <Text style={[styles.halfCardSubtitle, {color: isDark ? theme.textGray : 'rgba(10,43,94,0.6)'}]}>{t('navigate_paths')}</Text>
           </TouchableOpacity>
         </View>
  
         {/* Garden Wonders Section */}
         <View style={styles.sectionHeader}>
           <View>
-            <Text style={styles.sectionSubtitle}>{t('the_collection')}</Text>
-            <Text style={styles.sectionTitle}>{t('garden_wonders')}</Text>
+            <Text style={[styles.sectionSubtitle, { color: theme.textDark }]}>{t('the_collection')}</Text>
+            <Text style={[styles.sectionTitle, { color: theme.textDark }]}>{t('garden_wonders')}</Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate('Map')}>
-            <Text style={styles.viewAllText}>{t('view_all')}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Collection')}>
+            <Text style={[styles.viewAllText, { color: theme.textDark, borderColor: theme.textDark }]}>{t('view_all')}</Text>
           </TouchableOpacity>
         </View>
  
@@ -151,24 +132,24 @@ export default function HomeScreen({ navigation }) {
                   style={styles.botanicalImage} 
                 />
                 {index === 0 && (
-                  <View style={styles.newBadge}>
+                  <View style={[styles.newBadge, { backgroundColor: theme.badgeBg }]}>
                     <Text style={styles.newBadgeText}>{t('badge_new')}</Text>
                   </View>
                 )}
-                <Text style={styles.botanicalTitle}>{t('zone_name_' + zone.typeZone, zone.nom)}</Text>
-                <Text style={styles.botanicalDesc} numberOfLines={1}>{t('zone_desc_' + zone.typeZone, zone.description)}</Text>
+                <Text style={[styles.botanicalTitle, { color: theme.textDark }]}>{t('zone_name_' + zone.typeZone, zone.nom)}</Text>
+                <Text style={[styles.botanicalDesc, { color: theme.textGray }]} numberOfLines={1}>{t('zone_desc_' + zone.typeZone, zone.description)}</Text>
               </TouchableOpacity>
             );
           })}
         </ScrollView>
  
         {/* AI Curator Section */}
-        <View style={styles.aiCard}>
-          <Bot color="#4E5E2D" size={28} />
-          <Text style={styles.aiLabel}>{t('ai_curator')}</Text>
-          <Text style={styles.aiQuote}>{t('quote_text')}</Text>
-          <Text style={styles.aiAuthor}>{t('quote_author')}</Text>
-          <TouchableOpacity style={styles.aiBtn} onPress={() => navigation.navigate('Guide')}>
+        <View style={[styles.aiCard, { backgroundColor: theme.chatBotBg }]}>
+          <Bot color={theme.success} size={28} />
+          <Text style={[styles.aiLabel, { color: theme.success }]}>{t('ai_curator')}</Text>
+          <Text style={[styles.aiQuote, { color: theme.textDark }]}>{t('quote_text')}</Text>
+          <Text style={[styles.aiAuthor, { color: theme.textDark }]}>{t('quote_author')}</Text>
+          <TouchableOpacity style={[styles.aiBtn, { backgroundColor: theme.chatUserBg }]} onPress={() => navigation.navigate('Guide')}>
             <Text style={styles.aiBtnText}>{t('talk_to_guide')}</Text>
           </TouchableOpacity>
         </View>
@@ -180,9 +161,9 @@ export default function HomeScreen({ navigation }) {
       {/* Floating Action Button */}
       <TouchableOpacity 
         style={styles.fab}
-        onPress={() => navigation?.navigate('AR')}
+        onPress={() => Linking.openURL('https://tickets.jardinmajorelle.com/visite')}
       >
-        <QrCode color="#0A2B5E" size={28} />
+        <Ticket color="#0A2B5E" size={28} />
         <View style={styles.fabDecor} />
       </TouchableOpacity>
     </SafeAreaView>

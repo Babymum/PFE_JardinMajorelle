@@ -200,13 +200,18 @@ const FALLBACK_ZONES = [
 export const getZones = async () => {
   try {
     const response = await apiClient.get('/zones');
+    let liveZones = response.data && response.data.length > 0 ? response.data : FALLBACK_ZONES;
+    const missingZones = FALLBACK_ZONES.filter(fz => !liveZones.some(lz => lz.typeZone === fz.typeZone));
+    if (missingZones.length > 0) {
+      liveZones = [...liveZones, ...missingZones];
+    }
     // Sauvegarder dans le cache local
     try {
-      await AsyncStorage.setItem(ZONES_CACHE_KEY, JSON.stringify(response.data));
+      await AsyncStorage.setItem(ZONES_CACHE_KEY, JSON.stringify(liveZones));
     } catch (storageError) {
       console.warn("Impossible d'écrire dans AsyncStorage:", storageError.message);
     }
-    return response.data && response.data.length > 0 ? response.data : FALLBACK_ZONES;
+    return liveZones;
   } catch (error) {
     console.warn("Erreur réseau des zones. Tentative de lecture du cache...", error.message);
     try {
@@ -214,7 +219,12 @@ export const getZones = async () => {
       if (cached) {
         console.log("💾 Zones récupérées depuis le cache AsyncStorage local (Mode Hors-ligne).");
         const parsed = JSON.parse(cached);
-        return parsed && parsed.length > 0 ? parsed : FALLBACK_ZONES;
+        let liveZones = parsed && parsed.length > 0 ? parsed : FALLBACK_ZONES;
+        const missingZones = FALLBACK_ZONES.filter(fz => !liveZones.some(lz => lz.typeZone === fz.typeZone));
+        if (missingZones.length > 0) {
+          liveZones = [...liveZones, ...missingZones];
+        }
+        return liveZones;
       }
     } catch (cacheError) {
       console.warn("Impossible de lire le cache AsyncStorage :", cacheError.message);

@@ -11,10 +11,8 @@
   "view_all": "VIEW ALL",
   "ai_curator": "AI CURATOR",
   "talk_to_guide": "TALK TO THE GUIDE",
-
   "app_title": "Jardin Majorelle",
   "back": "Back",
-
   "tour_title": "3D VIRTUAL TOUR",
   "tour_gyro_info": "Drag to explore the 360° panorama",
   "tour_preview_zones": "PREVIEW IMMERSIVE ZONES",
@@ -28,7 +26,6 @@
   "tour_cactus_garden": "Cactus Garden",
   "tour_berber_museum": "Berber Museum",
   "tour_bamboo_forest": "Bamboo Forest",
-
   "ar_title": "JARDIN MAJORELLE - AR PREVIEW",
   "ar_camera_disable": "Disable Camera",
   "ar_camera_enable": "Enable Camera",
@@ -50,7 +47,6 @@
   "ar_villa_sub": "Art Deco Architecture",
   "ar_bamboo_title": "BAMBOO FOREST",
   "ar_bamboo_sub": "Shaded Canopy",
-
   "guide_title": "JARDIN MAJORELLE",
   "guide_concierge": "DIGITAL CONCIERGE",
   "guide_explore_prefix": "Explore the",
@@ -64,7 +60,6 @@
   "guide_attachment_title": "Attachment",
   "guide_attachment_desc": "Attach an image to the AI Guide",
   "guide_local_fallback": "Welcome to Jardin Majorelle! I am operating in local fallback mode. The garden features the stunning blue villa, Berber museum, cactus gardens, water lilies, and bamboo forest. How can I help you explore?",
-
   "map_filter_all": "ALL",
   "map_filter_historical": "HISTORICAL",
   "map_filter_botanical": "BOTANICAL",
@@ -75,12 +70,10 @@
   "map_favorites_title": "Favorites",
   "map_favorites_desc": "Zone saved in your favorites!",
   "map_zone_suffix": "ZONE",
-
   "detail_coordinates": "Coordinates: ",
   "detail_history_botany": "History & Botany",
   "detail_gallery": "Photo Gallery",
   "detail_visitor_info": "Visitor Information",
-
   "auth_back": "Back",
   "auth_portal": "ADMINISTRATIVE PORTAL",
   "auth_staff": "Staff Authentication",
@@ -95,7 +88,6 @@
   "auth_invalid_credentials": "Invalid credentials.",
   "auth_server_online": "SERVER ONLINE",
   "auth_legal": "PROPRIETARY SYSTEM — ACCESS RESTRICTED TO AUTHORIZED JARDIN MAJORELLE PERSONNEL ONLY.",
-
   "manage_infra": "CONNECTED INFRASTRUCTURE",
   "manage_title": "Zone Management",
   "manage_total_zones": "TOTAL ZONES",
@@ -146,7 +138,6 @@
   "tab_ar": "AR",
   "tab_guide": "GUIDE",
   "tab_map": "MAP",
-
   "zone_name_bassin": "Central Pond",
   "zone_desc_bassin": "At the heart of the garden, the pond brings an immediate sense of calm and freshness. Its still waters reflect the brilliant shades of Majorelle blue, the silhouettes of palm trees, and the lush vegetation around it. The gentle sound of water accompanies visitors through a moment of serenity where nature and poetry seem to speak together in harmony. The central pond is a true haven of peace inside the Jardin Majorelle, inviting contemplation and quiet reflection. Water lilies, lotus flowers, and other aquatic plants add mystery and beauty to this emblematic space.",
   "zone_info_bassin": "Iconic location of the Jardin Majorelle",
@@ -177,7 +168,6 @@
   "zone_name_librairie": "Bookstore",
   "zone_desc_librairie": "The bookstore is a space dedicated to art, history, botany, and Moroccan culture. Visitors discover carefully selected works that allow them to explore the world of the Jardin Majorelle more deeply, along with its artistic legacy and the inspirations that shaped this unique place. It is an ideal stop for readers and culture lovers, offering a rich and varied collection that perfectly complements the garden visit. The Jardin Majorelle bookstore is a true treasure for those who want to extend their experience and deepen their understanding of this iconic place and its fascinating cultural context.",
   "zone_info_librairie": "Cultural and artistic documentation",
-  
   "immersive_3d_exp": "Immersive 3D Experience",
   "badge_new": "NEW",
   "the_collection": "THE COLLECTION",
@@ -204,4 +194,3 @@
   "guide_voice_mode_local_btn": "Local",
   "guide_audio_local_badge": "local audio"
 }
-
