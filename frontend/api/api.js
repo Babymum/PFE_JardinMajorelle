@@ -3,7 +3,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Mise à jour de l'IP selon ton erreur Expo actuelle ou l'environnement
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.5:5000/api'; 
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.151:5000/api'; 
 
 const ZONES_CACHE_KEY = 'jardin_majorelle_zones_cache';
 
