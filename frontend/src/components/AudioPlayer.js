@@ -55,8 +55,12 @@ export default function AudioPlayer({ audioUrl }) {
         shouldRouteThroughEarpieceAndroid: false,
       });
 
+      const source = typeof audioUrl === 'string' && (audioUrl.startsWith('http') || audioUrl.startsWith('https'))
+        ? { uri: audioUrl }
+        : audioUrl;
+
       const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: audioUrl },
+        source,
         { shouldPlay: true },
         onPlaybackStatusUpdate
       );

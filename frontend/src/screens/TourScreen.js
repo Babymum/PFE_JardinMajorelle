@@ -107,7 +107,7 @@ export default function TourScreen({ navigation }) {
              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.gallery}>
                 {zones.map((zone, index) => {
                   const design = getZoneDesignProps(zone.typeZone);
-                  const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://'));
+                  const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://')) && !zone.image.includes('unsplash.com');
                   const mainImage = isRemoteUrl ? { uri: zone.image } : design.fallbackImage;
                   return (
                     <TouchableOpacity 

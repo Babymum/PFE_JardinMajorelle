@@ -23,7 +23,7 @@ export default function ZoneCard({ zone, onPress }) {
   };
 
   const props = getZoneDesignProps(zone.typeZone);
-  const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://'));
+  const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://')) && !zone.image.includes('unsplash.com');
   const cardImage = isRemoteUrl ? { uri: zone.image } : props.fallback;
 
   return (

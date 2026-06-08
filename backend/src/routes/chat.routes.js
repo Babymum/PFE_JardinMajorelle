@@ -136,6 +136,32 @@ const getOfflineGuideReply = (query) => {
   return "Bienvenue au Jardin Majorelle ! Je peux vous renseigner sur la Villa Bleue, le musée berbère, le jardin de cactus, le bassin central, la forêt de bambous, les cafés, la boutique ou la librairie.";
 };
 
+const queryWikipedia = async (query, lang = "fr") => {
+  try {
+    const cleanQuery = query
+      .replace(/[\?!\.,]/g, "")
+      .replace(/\b(de|la|le|du|des|un|une|les|en|sur|pour|qui|est|comment|pourquoi|quel|quelle)\b/gi, "")
+      .trim();
+
+    const wikiLang = lang === "ar" ? "ar" : (lang === "en" ? "en" : "fr");
+    const searchUrl = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&utf8=&format=json`;
+    
+    console.log(`[AI Guide Wikipedia Search] Querying Wikipedia (${wikiLang}): "${cleanQuery}"`);
+    const res = await fetch(searchUrl, { headers: { "User-Agent": "JardinMajorelleApp/1.0" } });
+    const data = await res.json();
+    const results = data?.query?.search || [];
+    if (results.length > 0) {
+      return results
+        .slice(0, 3)
+        .map(r => `[Wikipedia] ${r.title}: ${r.snippet.replace(/<[^>]*>/g, '').trim()}`)
+        .join("\n");
+    }
+  } catch (err) {
+    console.warn(`[AI Guide Wikipedia Search] Error querying wikipedia (${lang}):`, err.message);
+  }
+  return "";
+};
+
 // AI Chatbot Route for Jardin Majorelle
 router.post("/", async (req, res) => {
   const { message } = req.body;
@@ -143,20 +169,22 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "Message is required" });
   }
 
-  // 1. Try deterministic guide replies first (Local fallback for 0ms latency)
-  const directReply = getDeterministicGuideReply(message);
-  if (directReply) {
-    console.log(`[AI Guide] Deterministic reply match triggered for: "${message}"`);
-    return res.json({ reply: directReply });
+  const queryLower = message.toLowerCase();
+  
+  // Heuristic language detection
+  let queryLang = "fr";
+  if (/[\u0600-\u06FF]/.test(message)) {
+    queryLang = "ar";
+  } else {
+    const englishWords = /\b(the|and|is|who|how|why|what|where|garden|blue|cacti|cactus|museum)\b/i;
+    if (englishWords.test(message)) {
+      queryLang = "en";
+    }
   }
 
-  const queryLower = message.toLowerCase();
-
   try {
-    // 2. Dynamic Zone Search in Database (Local MongoDB fallback - fast, offline-capable)
+    // 1. Dynamic Zone Search in Database (Local MongoDB context)
     const zones = await getZonesCached();
-    
-    // Attempt database match on zone names
     let matchedZone = null;
     for (const z of zones) {
       if (queryLower.includes(z.nom.toLowerCase()) || 
@@ -166,34 +194,41 @@ router.post("/", async (req, res) => {
       }
     }
 
-    if (matchedZone) {
-      console.log(`[AI Guide] DB Zone match triggered: ${matchedZone.nom}`);
-      return res.json({
-        reply: `Le/La ${matchedZone.nom} est une magnifique zone du jardin. ${matchedZone.description ? matchedZone.description : "Elle représente un point d'intérêt culturel et naturel."}`
-      });
-    }
+    // 2. Fetch Wikipedia context if online
+    const wikiContext = await queryWikipedia(message, queryLang);
 
-    // 3. Fallback: Query Pollinations AI (with AbortController for short 1.8s fast timeout per model)
+    // 3. Assemble dynamic context for the LLM
     let zoneContext = "Jardin Majorelle : jardin historique et botanique à Marrakech, au Maroc, avec la Villa Bleue, le musée berbère, le jardin de cactus, les nénuphars, la forêt de bambous et les allées du jardin.";
-    if (zones && zones.length > 0) {
+    if (matchedZone) {
+      zoneContext = `Zone d'intérêt spécifique identifiée : ${matchedZone.nom}. Description : ${matchedZone.description}`;
+    } else if (zones && zones.length > 0) {
       zoneContext = zones
-        .slice(0, 5) // keep context light
-        .map((z) => `- ${z.nom}: ${z.description ? z.description.substring(0, 120) : "Une zone emblématique du jardin"}`)
+        .slice(0, 5)
+        .map((z) => `- ${z.nom}: ${z.description ? z.description.substring(0, 120) : "Une zone du jardin"}`)
         .join("\n");
     }
 
-    const systemPrompt = `Tu es le concierge numérique du Jardin Majorelle. Réponds en français, en moins de 3 phrases, avec un ton poli, concis et adapté à mobile. Contexte du jardin :\n${zoneContext}`;
+    // Choose system prompt based on language
+    let systemPrompt = "";
+    if (queryLang === "ar") {
+      systemPrompt = `أنت المساعد الرقمي لحديقة ماجوريل في مراكش. يرجى الإجابة باللغة العربية فقط في أقل من 3 جمل بشكل مهذب ومناسب للهاتف المحمول. السياق المتوفر :\n${zoneContext}\nمعلومات إضافية :\n${wikiContext}`;
+    } else if (queryLang === "en") {
+      systemPrompt = `You are the digital concierge for Jardin Majorelle in Marrakech. Respond only in English, under 3 sentences, with a polite, concise tone suitable for mobile. Context:\n${zoneContext}\nAdditional Info:\n${wikiContext}`;
+    } else {
+      systemPrompt = `Tu es le concierge numérique du Jardin Majorelle à Marrakech. Réponds en français, en moins de 3 phrases, avec un ton poli, concis et adapté à mobile. Contexte :\n${zoneContext}\nInfos supplémentaires :\n${wikiContext}`;
+    }
 
+    // 4. Query Pollinations AI (with AbortController for reasonable 6s timeout)
     const models = ["openai", "mistral", "llama", "qwen"];
     let reply = "";
     let success = false;
 
     for (const model of models) {
       try {
-        console.log(`[AI Guide] Querying pollinations with model: ${model}`);
+        console.log(`[AI Guide] Querying pollinations with model: ${model} (Timeout: 6s)`);
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1800); // 1.8 seconds timeout!
+        const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 seconds timeout!
 
         const response = await fetch("https://text.pollinations.ai/", {
           method: "POST",
@@ -226,14 +261,33 @@ router.post("/", async (req, res) => {
       }
     }
 
-    if (!success) {
-      console.warn("[AI Guide] All AI models failed or timed out. Falling back to offline French guide replies.");
-      reply = getOfflineGuideReply(message);
+    if (success) {
+      return res.json({ reply: reply.trim() });
     }
 
-    res.json({ reply: reply.trim() });
+    // 5. Fallback 1: Try deterministic match offline
+    console.warn("[AI Guide] LLM failed. Attempting deterministic offline matching...");
+    const directReply = getDeterministicGuideReply(message);
+    if (directReply) {
+      return res.json({ reply: directReply });
+    }
+
+    // 6. Fallback 2: General offline reply
+    if (matchedZone) {
+      return res.json({
+        reply: `Le/La ${matchedZone.nom} est une magnifique zone du jardin. ${matchedZone.description ? matchedZone.description : "Elle représente un point d'intérêt culturel et naturel."}`
+      });
+    }
+
+    return res.json({ reply: getOfflineGuideReply(message) });
+
   } catch (error) {
     console.error("[AI Guide Error] Chat route failed:", error);
+    // Last resort fallback
+    const directReply = getDeterministicGuideReply(message);
+    if (directReply) {
+      return res.json({ reply: directReply });
+    }
     res.json({
       reply: getOfflineGuideReply(message)
     });

@@ -377,30 +377,38 @@ export default function MapScreen({ navigation }) {
           </TouchableOpacity>
           
           {selectedZone && (
-            <View style={styles.bottomCard}>
+            <TouchableOpacity 
+              style={styles.bottomCard}
+              onPress={() => navigation.navigate('ZoneDetail', { zone: selectedZone })}
+              activeOpacity={0.9}
+            >
               <Image
-                source={selectedZone.image && /^https?:\/\//i.test(selectedZone.image)
+                source={selectedZone.image && /^https?:\/\//i.test(selectedZone.image) && !selectedZone.image.includes('unsplash.com')
                   ? { uri: selectedZone.image }
                   : getZoneDesignProps(selectedZone.typeZone).image}
                 style={styles.cardCover}
               />
               <View style={styles.cardContent}>
-                <Text style={styles.cardCategory}>
-                  {t(`type_${getZoneDesignProps(selectedZone.typeZone).type.toLowerCase()}`)} {t('map_zone_suffix')}
-                </Text>
-                <Text style={styles.cardTitle}>{t('zone_name_' + selectedZone.typeZone, selectedZone.nom)}</Text>
-                <Text style={styles.cardDesc} numberOfLines={2}>{t('zone_desc_' + selectedZone.typeZone, selectedZone.description)}</Text>
-                
-                <View style={styles.cardActions}>
-                  <TouchableOpacity style={styles.btnPrimary} onPress={() => navigation.navigate('ZoneDetail', { zone: selectedZone })}>
-                    <Text style={styles.btnPrimaryText}>{t('map_explore_zone')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.btnSecondary} onPress={() => Alert.alert(t('map_saved_title'), t('map_saved_bookmark'))}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <View style={{ flex: 1, paddingRight: 10 }}>
+                    <Text style={styles.cardCategory}>
+                      {t(`type_${getZoneDesignProps(selectedZone.typeZone).type.toLowerCase()}`)} {t('map_zone_suffix')}
+                    </Text>
+                    <Text style={styles.cardTitle}>{t('zone_name_' + selectedZone.typeZone, selectedZone.nom)}</Text>
+                  </View>
+                  <TouchableOpacity 
+                    style={styles.btnSecondary} 
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      Alert.alert(t('map_saved_title'), t('map_saved_bookmark'));
+                    }}
+                  >
                     <Bookmark color="#0A2B5E" size={18} />
                   </TouchableOpacity>
                 </View>
+                <Text style={styles.cardDesc} numberOfLines={2}>{t('zone_desc_' + selectedZone.typeZone, selectedZone.description)}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         </View>
 

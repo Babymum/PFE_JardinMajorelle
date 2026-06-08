@@ -1,15 +1,32 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, Modal, Alert, ActivityIndicator, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, MapPin } from 'lucide-react-native';
+import { ArrowLeft, MapPin, Download, X, Share2 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AudioPlayer from '../components/AudioPlayer';
 import { trackScreen, trackZoneEngagement } from '../services/analytics';
 import { useTranslation } from 'react-i18next';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+
+const zoneAudioMap = {
+  bassin: require('../../assets/audio/bassin.mp3'),
+  jardin_bambou: require('../../assets/audio/jardin-bambou.mp3'),
+  jardin_cactus: require('../../assets/audio/jardin-cactus.mp3'),
+  musee_berbere: require('../../assets/audio/musee-berbere.mp3'),
+  villa_bleue: require('../../assets/audio/villa-bleue.mp3'),
+  boutique: require('../../assets/audio/boutique.mp3'),
+  librairie: require('../../assets/audio/librairie.mp3'),
+  allee_jardin: require('../../assets/audio/allees.mp3'),
+  cafe_majorelle: require('../../assets/audio/cafe-majorelle.mp3'),
+  cafe_bousafsaf: require('../../assets/audio/cafe-bousafsaf.mp3'),
+};
 
 export default function ZoneDetailScreen({ route, navigation }) {
   const { t } = useTranslation();
   const { zone } = route.params;
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     trackScreen(`ZoneDetail - ${zone.nom}`);
@@ -18,6 +35,55 @@ export default function ZoneDetailScreen({ route, navigation }) {
 
   const handleBack = () => {
     navigation.goBack();
+  };
+
+  const handleDownload = async (url) => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          t('error') || 'Erreur',
+          t('permission_denied_gallery') || "L'accès à la galerie a été refusé. Veuillez l'autoriser dans les réglages de votre téléphone."
+        );
+        return;
+      }
+
+      setDownloading(true);
+      const filename = url.split('/').pop().split('?')[0] || 'photo';
+      const cleanFilename = filename.endsWith('.jpg') || filename.endsWith('.png') ? filename : `${filename}.jpg`;
+      const fileUri = `${FileSystem.documentDirectory}${cleanFilename}`;
+      
+      const downloadResult = await FileSystem.downloadAsync(url, fileUri);
+      
+      if (downloadResult.status === 200) {
+        await MediaLibrary.createAssetAsync(downloadResult.uri);
+        Alert.alert(
+          t('success') || 'Succès',
+          t('image_saved_success') || 'Image enregistrée avec succès dans la galerie !'
+        );
+      } else {
+        throw new Error('Server returned non-200 status');
+      }
+    } catch (error) {
+      console.error('Error saving image:', error);
+      Alert.alert(
+        t('error') || 'Erreur',
+        t('image_saved_error') || "Impossible d'enregistrer l'image. Veuillez réessayer."
+      );
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleShare = async (url) => {
+    try {
+      await Share.share({
+        url: url,
+        message: `${t('zone_name_' + zone.typeZone, zone.nom)} - Jardin Majorelle: ${url}`,
+      });
+    } catch (error) {
+      console.error('Error sharing image:', error);
+    }
   };
 
   const getZoneDesignProps = (typeZone) => {
@@ -38,8 +104,9 @@ export default function ZoneDetailScreen({ route, navigation }) {
   };
 
   const design = getZoneDesignProps(zone.typeZone);
-  const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://'));
+  const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://')) && !zone.image.includes('unsplash.com');
   const mainImage = isRemoteUrl ? { uri: zone.image } : design.fallbackImage;
+  const audioSource = zoneAudioMap[zone.typeZone] || zone.audioUrl || null;
 
   return (
     <View style={styles.container}>
@@ -82,8 +149,8 @@ export default function ZoneDetailScreen({ route, navigation }) {
           </View>
 
           {/* Audio Narration Guide Component */}
-          {zone.audioUrl ? (
-            <AudioPlayer audioUrl={zone.audioUrl} />
+          {audioSource ? (
+            <AudioPlayer audioUrl={audioSource} />
           ) : null}
 
           {/* Description */}
@@ -96,9 +163,14 @@ export default function ZoneDetailScreen({ route, navigation }) {
               <Text style={styles.sectionTitle}>{t('detail_gallery')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryScroll}>
                 {zone.gallery.map((imgUrl, idx) => (
-                  <View key={idx} style={styles.galleryCard}>
+                  <TouchableOpacity 
+                    key={idx} 
+                    style={styles.galleryCard}
+                    onPress={() => setSelectedImage(imgUrl)}
+                    activeOpacity={0.8}
+                  >
                     <Image source={{ uri: imgUrl }} style={styles.galleryImg} />
-                  </View>
+                  </TouchableOpacity>
                 ))}
               </ScrollView>
             </View>
@@ -113,6 +185,63 @@ export default function ZoneDetailScreen({ route, navigation }) {
           ) : null}
         </View>
       </ScrollView>
+
+      {/* Full Screen Image Viewer Modal */}
+      <Modal
+        visible={!!selectedImage}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setSelectedImage(null)}
+      >
+        <View style={styles.modalContainer}>
+          {/* Close button on top */}
+          <TouchableOpacity 
+            style={styles.modalCloseBtn} 
+            onPress={() => setSelectedImage(null)}
+          >
+            <X color="#FFF" size={28} />
+          </TouchableOpacity>
+
+          {/* Large Image */}
+          {selectedImage && (
+            <Image 
+              source={{ uri: selectedImage }} 
+              style={styles.modalImage} 
+              resizeMode="contain" 
+            />
+          )}
+
+          {/* Action buttons at the bottom */}
+          {selectedImage && (
+            <View style={styles.modalActions}>
+              <TouchableOpacity 
+                style={styles.modalActionBtn} 
+                onPress={() => handleShare(selectedImage)}
+              >
+                <Share2 color="#FFF" size={24} />
+                <Text style={styles.modalActionText}>{t('share') || 'Partager'}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.modalActionBtn, styles.modalDownloadBtn]} 
+                onPress={() => handleDownload(selectedImage)}
+                disabled={downloading}
+              >
+                {downloading ? (
+                  <ActivityIndicator color="#0A2B5E" size="small" />
+                ) : (
+                  <>
+                    <Download color="#0A2B5E" size={24} />
+                    <Text style={[styles.modalActionText, { color: '#0A2B5E' }]}>
+                      {t('download') || 'Télécharger'}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -248,5 +377,55 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#3A485A',
     lineHeight: 18,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalCloseBtn: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+    padding: 10,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 25,
+  },
+  modalImage: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height * 0.7,
+  },
+  modalActions: {
+    position: 'absolute',
+    bottom: 50,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: 20,
+    gap: 15,
+  },
+  modalActionBtn: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    paddingVertical: 14,
+    paddingHorizontal: 22,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  modalDownloadBtn: {
+    backgroundColor: '#B4B813',
+    borderColor: '#B4B813',
+  },
+  modalActionText: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
