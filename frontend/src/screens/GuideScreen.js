@@ -912,7 +912,10 @@ export default function GuideScreen({ navigation }) {
               <Plus color="#FFF" size={20} />
             </TouchableOpacity>
             <TextInput 
-              style={styles.textInput} 
+              style={[
+                styles.textInput,
+                i18n.language?.startsWith('ar') && { textAlign: 'right', writingDirection: 'rtl' }
+              ]} 
               placeholder={t('guide_input_placeholder')} 
               placeholderTextColor="#8C9BB0"
               value={inputText}

@@ -3,7 +3,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Mise à jour de l'IP selon ton erreur Expo actuelle ou l'environnement
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.100.151:5000/api'; 
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.11.249:5000/api'; 
 
 const ZONES_CACHE_KEY = 'jardin_majorelle_zones_cache';
 
@@ -26,14 +26,13 @@ const FALLBACK_ZONES = [
     "typeZone": "bassin",
     "position3D": { "x": 10, "y": 5, "z": 2 },
     "image": "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=600",
-    "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     "gallery": [
-      "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=600",
-      "https://images.unsplash.com/photo-1508962914676-134849a727f0?q=80&w=600",
-      "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=600",
-      "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?q=80&w=600",
-      "https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?q=80&w=600",
-      "https://images.unsplash.com/photo-1533038590840-1cde6e66b0a2?q=80&w=600"
+     require('../assets/galerie/bassin1.jpeg'),
+     require('../assets/galerie/bassin2.jpeg'),
+     require('../assets/galerie/bassin3.jpeg'),
+    require('../assets/galerie/bassin4.jpeg'),
+      require('../assets/galerie/bassin5.jpeg'),
+      require('../assets/galerie/bassin6.jpeg')
     ],
     "latitude": 31.6415,
     "longitude": -8.0025
@@ -45,14 +44,13 @@ const FALLBACK_ZONES = [
     "typeZone": "jardin_cactus",
     "position3D": { "x": 15, "y": 3, "z": 1 },
     "image": "https://images.unsplash.com/photo-1525253086316-d0c936c814f8?q=80&w=600",
-    "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     "gallery": [
-      "https://images.unsplash.com/photo-1525253086316-d0c936c814f8?q=80&w=600",
-      "https://images.unsplash.com/photo-1519331379826-f10be5486c6f?q=80&w=600",
-      "https://images.unsplash.com/photo-1483794344563-d27a8d18014e?q=80&w=600",
-      "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=80&w=600",
-      "https://images.unsplash.com/photo-1509423350716-97f9360b4e5f?q=80&w=600",
-      "https://images.unsplash.com/photo-1551893478-d726eaf06427?q=80&w=600"
+      require('../assets/galerie/cactus1.jpeg'),
+      require('../assets/galerie/cactus2.jpeg'),
+      require('../assets/galerie/cactus3.jpeg'),
+      require('../assets/galerie/cactus4.jpeg'),
+      require('../assets/galerie/cactus5.jpeg'),
+      require('../assets/galerie/cactus6.jpeg')
     ],
     "latitude": 31.6422,
     "longitude": -8.0022
@@ -65,12 +63,12 @@ const FALLBACK_ZONES = [
     "position3D": { "x": 22, "y": 9, "z": 1 },
     "image": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=600",
     "gallery": [
-      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=600",
-      "https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=600",
-      "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?q=80&w=600",
-      "https://images.unsplash.com/photo-1507133750040-4a8f57021571?q=80&w=600",
-      "https://images.unsplash.com/photo-1543007630-9710e4a00a20?q=80&w=600",
-      "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=600"
+       require('../assets/galerie/bousa.jpeg'),
+       require('../assets/galerie/bousaf.jpeg'),
+       require('../assets/galerie/bousaff.jpeg'),
+       require('../assets/galerie/bousafsa.jpeg'),
+       require('../assets/galerie/bousafsaf.jpeg'),
+       require('../assets/galerie/bousafsaff.jpeg')
     ]
   },
   {
@@ -81,12 +79,12 @@ const FALLBACK_ZONES = [
     "position3D": { "x": 12, "y": 6, "z": 0 },
     "image": "https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=600",
     "gallery": [
-      "https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=600",
-      "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?q=80&w=600",
-      "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=600",
-      "https://images.unsplash.com/photo-1472214222541-d510753a4907?q=80&w=600",
-      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=600",
-      "https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=600"
+      require('../assets/galerie/allee1.jpeg'),
+      require('../assets/galerie/allee2.jpeg'),
+      require('../assets/galerie/allee3.jpeg'),
+      require('../assets/galerie/allee4.jpeg'),
+      require('../assets/galerie/allee5.jpeg'),
+      require('../assets/galerie/allee6.jpeg')
     ]
   },
   {
@@ -96,14 +94,13 @@ const FALLBACK_ZONES = [
     "typeZone": "jardin_bambou",
     "position3D": { "x": 20, "y": 8, "z": 1 },
     "image": "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600",
-    "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
     "gallery": [
-      "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600",
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600",
-      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600",
-      "https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=600",
-      "https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=600",
-      "https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=600"
+      require('../assets/galerie/bambou1.jpeg'),
+      require('../assets/galerie/bambou2.jpeg'),
+      require('../assets/galerie/bambou3.jpeg'),
+      require('../assets/galerie/bambou4.jpeg'),
+      require('../assets/galerie/bambou5.jpeg'),
+      require('../assets/galerie/bambou6.jpeg')
     ],
     "latitude": 31.6412,
     "longitude": -8.0026
@@ -115,14 +112,13 @@ const FALLBACK_ZONES = [
     "typeZone": "villa_bleue",
     "position3D": { "x": 5, "y": 10, "z": 2 },
     "image": "https://images.unsplash.com/photo-1596436889106-be35e843f974?q=80&w=600",
-    "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     "gallery": [
-      "https://images.unsplash.com/photo-1596436889106-be35e843f974?q=80&w=600",
-      "https://images.unsplash.com/photo-1540959733332-eab4deceeaf7?q=80&w=600",
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600",
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=600",
-      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=600"
+      require('../assets/galerie/villa1.jpeg'),
+      require('../assets/galerie/villa2.jpeg'),
+      require('../assets/galerie/villa3.jpeg'),
+      require('../assets/galerie/villa4.jpeg'),
+      require('../assets/galerie/villa5.jpeg'),
+      require('../assets/galerie/villa6.jpeg')
     ],
     "latitude": 31.6418,
     "longitude": -8.0028
@@ -134,14 +130,13 @@ const FALLBACK_ZONES = [
     "typeZone": "musee_berbere",
     "position3D": { "x": 6, "y": 12, "z": 2 },
     "image": "https://images.unsplash.com/photo-1590073844006-33379778ae09?q=80&w=600",
-    "audioUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     "gallery": [
-      "https://images.unsplash.com/photo-1590073844006-33379778ae09?q=80&w=600",
-      "https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=600",
-      "https://images.unsplash.com/photo-1566121318599-27b055928d10?q=80&w=600",
-      "https://images.unsplash.com/photo-1503174971373-b1f69850bdf4?q=80&w=600",
-      "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=600",
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600"
+      require('../assets/galerie/musee1.jpeg'),
+      require('../assets/galerie/musee2.jpeg'),
+      require('../assets/galerie/musee3.jpeg'),
+      require('../assets/galerie/musee4.jpeg'),
+      require('../assets/galerie/musee5.jpeg'),
+      require('../assets/galerie/musee6.jpeg')
     ],
     "latitude": 31.6418,
     "longitude": -8.0024
@@ -154,12 +149,12 @@ const FALLBACK_ZONES = [
     "position3D": { "x": 18, "y": 10, "z": 1 },
     "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600",
     "gallery": [
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600",
-      "https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=600",
-      "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=600",
-      "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=600",
-      "https://images.unsplash.com/photo-1522336572241-9946d7913b91?q=80&w=600",
-      "https://images.unsplash.com/photo-1485182708500-e8f1f318ba72?q=80&w=600"
+      require('../assets/galerie/cmajorelle1.jpeg'),
+      require('../assets/galerie/cmajorelle2.jpeg'),
+      require('../assets/galerie/cmajorelle3.jpeg'),
+      require('../assets/galerie/cmajorelle4.jpeg'),
+      require('../assets/galerie/cmajorelle5.jpeg'),
+      require('../assets/galerie/cmajorelle6.jpeg')
     ]
   },
   {
@@ -170,12 +165,12 @@ const FALLBACK_ZONES = [
     "position3D": { "x": 8, "y": 14, "z": 1 },
     "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600",
     "gallery": [
-      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600",
-      "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?q=80&w=600",
-      "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=600",
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600",
-      "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?q=80&w=600",
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600"
+      require('../assets/galerie/boutique1.jpeg'),
+      require('../assets/galerie/boutique2.jpeg'),
+      require('../assets/galerie/boutique3.jpeg'),
+      require('../assets/galerie/boutique4.jpeg'),
+      require('../assets/galerie/boutique5.jpeg'),
+      require('../assets/galerie/boutique6.jpeg')
     ]
   },
   {
@@ -186,12 +181,12 @@ const FALLBACK_ZONES = [
     "position3D": { "x": 9, "y": 13, "z": 1 },
     "image": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=600",
     "gallery": [
-      "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=600",
-      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=600",
-      "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=600",
-      "https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=600",
-      "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=600",
-      "https://images.unsplash.com/photo-1505664194779-8bebcb95c557?q=80&w=600"
+      require('../assets/galerie/librairie1.jpeg'),
+      require('../assets/galerie/librairie2.jpeg'),
+      require('../assets/galerie/librairie3.jpeg'),
+      require('../assets/galerie/librairie4.jpeg'),
+      require('../assets/galerie/librairie5.jpeg'),
+      require('../assets/galerie/librairie6.jpeg')
     ]
   }
 ];

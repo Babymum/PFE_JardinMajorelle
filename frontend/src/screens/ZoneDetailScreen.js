@@ -8,6 +8,8 @@ import { trackScreen, trackZoneEngagement } from '../services/analytics';
 import { useTranslation } from 'react-i18next';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
+import { Asset } from 'expo-asset';
+
 
 const zoneAudioMap = {
   bassin: require('../../assets/audio/bassin.mp3'),
@@ -21,6 +23,90 @@ const zoneAudioMap = {
   cafe_majorelle: require('../../assets/audio/cafe-majorelle.mp3'),
   cafe_bousafsaf: require('../../assets/audio/cafe-bousafsaf.mp3'),
 };
+
+const localGalleryMap = {
+  bassin: [
+    require('../../assets/galerie/bassin1.jpeg'),
+    require('../../assets/galerie/bassin2.jpeg'),
+    require('../../assets/galerie/bassin3.jpeg'),
+    require('../../assets/galerie/bassin4.jpeg'),
+    require('../../assets/galerie/bassin5.jpeg'),
+    require('../../assets/galerie/bassin6.jpeg'),
+  ],
+  jardin_cactus: [
+    require('../../assets/galerie/cactus1.jpeg'),
+    require('../../assets/galerie/cactus2.jpeg'),
+    require('../../assets/galerie/cactus3.jpeg'),
+    require('../../assets/galerie/cactus4.jpeg'),
+    require('../../assets/galerie/cactus5.jpeg'),
+    require('../../assets/galerie/cactus6.jpeg'),
+  ],
+  cafe_bousafsaf: [
+    require('../../assets/galerie/bousafsaf.jpeg'),
+    require('../../assets/galerie/bousaf.jpeg'),
+    require('../../assets/galerie/bousaff.jpeg'),
+    require('../../assets/galerie/bousa.jpeg'),
+    require('../../assets/galerie/bousafsa.jpeg'),
+    require('../../assets/galerie/bousafsaff.jpeg'),
+  ],
+  allee_jardin: [
+    require('../../assets/galerie/allee1.jpeg'),
+    require('../../assets/galerie/allee2.jpeg'),
+    require('../../assets/galerie/allee3.jpeg'),
+    require('../../assets/galerie/allee4.jpeg'),
+    require('../../assets/galerie/allee5.jpeg'),
+    require('../../assets/galerie/allee6.jpeg'),
+  ],
+  jardin_bambou: [
+    require('../../assets/galerie/bambou1.jpeg'),
+    require('../../assets/galerie/bambou2.jpeg'),
+    require('../../assets/galerie/bambou3.jpeg'),
+    require('../../assets/galerie/bambou4.jpeg'),
+    require('../../assets/galerie/bambou5.jpeg'),
+    require('../../assets/galerie/bambou6.jpeg'),
+  ],
+  villa_bleue: [
+    require('../../assets/galerie/villa1.jpeg'),
+    require('../../assets/galerie/villa2.jpeg'),
+    require('../../assets/galerie/villa3.jpeg'),
+    require('../../assets/galerie/villa4.jpeg'),
+    require('../../assets/galerie/villa5.jpeg'),
+    require('../../assets/galerie/villa6.jpeg'),
+  ],
+  musee_berbere: [
+    require('../../assets/galerie/musee1.jpeg'),
+    require('../../assets/galerie/musee2.jpeg'),
+    require('../../assets/galerie/musee3.jpeg'),
+    require('../../assets/galerie/musee4.jpeg'),
+    require('../../assets/galerie/musee5.jpeg'),
+    require('../../assets/galerie/musee6.jpeg'),
+  ],
+  cafe_majorelle: [
+    require('../../assets/galerie/cmajorelle1.jpeg'),
+    require('../../assets/galerie/cmajorelle2.jpeg'),
+    require('../../assets/galerie/cmajorelle3.jpeg'),
+    require('../../assets/galerie/cmajorelle4.jpeg'),
+    require('../../assets/galerie/cmajorelle5.jpeg'),
+    require('../../assets/galerie/cmajorelle6.jpeg'),
+  ],
+  boutique: [
+    require('../../assets/galerie/boutique1.jpeg'),
+    require('../../assets/galerie/boutique2.jpeg'),
+    require('../../assets/galerie/boutique3.jpeg'),
+    require('../../assets/galerie/boutique4.jpeg'),
+    require('../../assets/galerie/boutique5.jpeg'),
+    require('../../assets/galerie/boutique6.jpeg'),
+  ],
+  librairie: [
+    require('../../assets/galerie/librairie1.jpeg'),
+    require('../../assets/galerie/librairie2.jpeg'),
+    require('../../assets/galerie/librairie3.jpeg'),
+    require('../../assets/galerie/librairie4.jpeg'),
+    require('../../assets/galerie/librairie5.jpeg'),
+    require('../../assets/galerie/librairie6.jpeg'),
+  ],
+};
+
 
 export default function ZoneDetailScreen({ route, navigation }) {
   const { t } = useTranslation();
@@ -37,7 +123,7 @@ export default function ZoneDetailScreen({ route, navigation }) {
     navigation.goBack();
   };
 
-  const handleDownload = async (url) => {
+  const handleDownload = async (img) => {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
@@ -49,20 +135,31 @@ export default function ZoneDetailScreen({ route, navigation }) {
       }
 
       setDownloading(true);
-      const filename = url.split('/').pop().split('?')[0] || 'photo';
-      const cleanFilename = filename.endsWith('.jpg') || filename.endsWith('.png') ? filename : `${filename}.jpg`;
-      const fileUri = `${FileSystem.documentDirectory}${cleanFilename}`;
+      let localUri;
+      if (typeof img === 'string') {
+        const filename = img.split('/').pop().split('?')[0] || 'photo';
+        const cleanFilename = filename.endsWith('.jpg') || filename.endsWith('.png') ? filename : `${filename}.jpg`;
+        const fileUri = `${FileSystem.documentDirectory}${cleanFilename}`;
+        
+        const downloadResult = await FileSystem.downloadAsync(img, fileUri);
+        
+        if (downloadResult.status === 200) {
+          localUri = downloadResult.uri;
+        } else {
+          throw new Error('Server returned non-200 status');
+        }
+      } else {
+        const asset = Asset.fromModule(img);
+        await asset.downloadAsync();
+        localUri = asset.localUri;
+      }
       
-      const downloadResult = await FileSystem.downloadAsync(url, fileUri);
-      
-      if (downloadResult.status === 200) {
-        await MediaLibrary.createAssetAsync(downloadResult.uri);
+      if (localUri) {
+        await MediaLibrary.createAssetAsync(localUri);
         Alert.alert(
           t('success') || 'Succès',
           t('image_saved_success') || 'Image enregistrée avec succès dans la galerie !'
         );
-      } else {
-        throw new Error('Server returned non-200 status');
       }
     } catch (error) {
       console.error('Error saving image:', error);
@@ -75,12 +172,21 @@ export default function ZoneDetailScreen({ route, navigation }) {
     }
   };
 
-  const handleShare = async (url) => {
+  const handleShare = async (img) => {
     try {
-      await Share.share({
-        url: url,
-        message: `${t('zone_name_' + zone.typeZone, zone.nom)} - Jardin Majorelle: ${url}`,
-      });
+      if (typeof img === 'string') {
+        await Share.share({
+          url: img,
+          message: `${t('zone_name_' + zone.typeZone, zone.nom)} - Jardin Majorelle: ${img}`,
+        });
+      } else {
+        const asset = Asset.fromModule(img);
+        await asset.downloadAsync();
+        await Share.share({
+          url: asset.localUri,
+          message: `${t('zone_name_' + zone.typeZone, zone.nom)} - Jardin Majorelle`,
+        });
+      }
     } catch (error) {
       console.error('Error sharing image:', error);
     }
@@ -107,6 +213,7 @@ export default function ZoneDetailScreen({ route, navigation }) {
   const isRemoteUrl = zone.image && (zone.image.startsWith('http://') || zone.image.startsWith('https://')) && !zone.image.includes('unsplash.com');
   const mainImage = isRemoteUrl ? { uri: zone.image } : design.fallbackImage;
   const audioSource = zoneAudioMap[zone.typeZone] || zone.audioUrl || null;
+  const galleryImages = localGalleryMap[zone.typeZone] || zone.gallery || [];
 
   return (
     <View style={styles.container}>
@@ -154,11 +261,11 @@ export default function ZoneDetailScreen({ route, navigation }) {
           <Text style={styles.descriptionText}>{t('zone_desc_' + zone.typeZone, zone.description)}</Text>
 
           {/* Gallery */}
-          {zone.gallery && zone.gallery.length > 0 ? (
+          {galleryImages && galleryImages.length > 0 ? (
             <View style={styles.galleryContainer}>
               <Text style={styles.sectionTitle}>{t('detail_gallery')}</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.galleryScroll}>
-                {zone.gallery.map((imgSource, idx) => {
+                {galleryImages.map((imgSource, idx) => {
                   const sourceProp = typeof imgSource === 'string' ? { uri: imgSource } : imgSource;
                   return (
                     <TouchableOpacity 
@@ -211,7 +318,7 @@ export default function ZoneDetailScreen({ route, navigation }) {
           )}
 
           {/* Action buttons at the bottom */}
-          {selectedImage && typeof selectedImage === 'string' && (
+          {selectedImage && (
             <View style={styles.modalActions}>
               <TouchableOpacity 
                 style={styles.modalActionBtn} 
